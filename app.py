@@ -33,12 +33,13 @@ def call_ai(model_name, prompt):
   if model['provider'] == 'openai':
     return call_openai_v2(model, prompt)
   if model['provider'] == 'mistral':
-    return call_mistral(model, prompt)
+    return call_openai_v2(model, prompt)
   return None
 
 def call_openai_v2(model, prompt):
   model_data = get_model(model['name'])
   if model_data is None:
+    print("no model data")
     return None
 
   print(model_data)
@@ -72,6 +73,4 @@ def call_openai_v2(model, prompt):
 
 # ----------------------
 
-print(os.getenv('OPENAI_API_KEY'))
-
-call_ai("mistral-small-latest", "Hello, world!")
+print(call_ai("mistral-small-latest", "Hello, world!"))
