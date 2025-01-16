@@ -1,0 +1,22 @@
+private/
+test/
+
+# Local environment files
+venv/
+.env
+
+# Logs
+*.log
+
+# Dependency files
+node_modules/
+vendor/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.code-workspace
