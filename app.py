@@ -50,7 +50,7 @@ def get_model(model_name):
       return model
   return None
 
-def convert_input_to_messages(input):
+def format_input_as_messages(input):
     if isinstance(input, str):
         return [{"role": "user", "content": input}]
     return input
@@ -80,7 +80,7 @@ def fetch_openai_v2(model, input):
 
   payload = {
     "model": model_data['name'],
-    "messages": convert_input_to_messages(input),
+    "messages": format_input_as_messages(input),
     "temperature": 0.7
   }
 
@@ -103,7 +103,7 @@ def fetch_gemini_v1(model, input):
     print("no model data")
     return None
 
-  messages = convert_input_to_messages(input)
+  messages = format_input_as_messages(input)
   # Concatenate content from all messages
   prompt_text = "\n".join([msg['content'] for msg in messages])
   
@@ -142,7 +142,7 @@ def fetch_anthropic(model, messages):
     print("no model data")
     return None
 
-  messages = convert_input_to_messages(messages)
+  messages = format_input_as_messages(messages)
   
   headers = {
     "x-api-key": model_data['api_key'],
