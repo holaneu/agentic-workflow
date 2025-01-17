@@ -1,1 +1,1 @@
-some text here 
+func to convert image to base64 so it can be uploaded to ai models
