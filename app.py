@@ -50,6 +50,11 @@ def get_model(model_name):
       return model
   return None
 
+def convert_input_to_messages(input):
+    if isinstance(input, str):
+        return [{"role": "user", "content": input}]
+    return input
+
 def fetch_ai(model_name, input):
   model = get_model(model_name)
   if model is None:
@@ -62,12 +67,12 @@ def fetch_ai(model_name, input):
     return fetch_anthropic(model, input)
   return None
 
-def fetch_openai_v2(model, messages):
+def fetch_openai_v2(model, input):
   model_data = get_model(model['name'])
   if model_data is None:
     print("no model data")
     return None
-
+  
   headers = {
     "Authorization": f"Bearer {model_data['api_key']}",
     "Content-Type": "application/json"
@@ -75,7 +80,7 @@ def fetch_openai_v2(model, messages):
 
   payload = {
     "model": model_data['name'],
-    "messages": messages,
+    "messages": convert_input_to_messages(input),
     "temperature": 0.7
   }
 
@@ -92,12 +97,16 @@ def fetch_openai_v2(model, messages):
     print(f"Error calling model: {e}")
     return None
 
-def fetch_gemini_v1(model, prompt):
+def fetch_gemini_v1(model, input):
   model_data = get_model(model['name'])
   if model_data is None:
     print("no model data")
     return None
 
+  messages = convert_input_to_messages(input)
+  # Concatenate content from all messages
+  prompt_text = "\n".join([msg['content'] for msg in messages])
+  
   base_url = f"{model_data['base_url']}/{model_data['name']}:generateContent"
   
   headers = {
@@ -106,7 +115,7 @@ def fetch_gemini_v1(model, prompt):
 
   payload = {
     "contents": [{
-      "parts": [{"text": prompt}]
+      "parts": [{"text": prompt_text}]
     }]
   }
 
@@ -133,6 +142,8 @@ def fetch_anthropic(model, messages):
     print("no model data")
     return None
 
+  messages = convert_input_to_messages(messages)
+  
   headers = {
     "x-api-key": model_data['api_key'],
     "anthropic-version": "2023-06-01",
@@ -207,10 +218,10 @@ def agent_translator(input):
 # playground:
 
 if __name__ == "__main__":
-  #print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
+  print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
 
-  #print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
+  print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
 
-  #print('\ngemini:\n', fetch_ai("gemini-1.5-flash", {"role": "user", "content": "What is the capital of France?"}))
+  print('\ngemini:\n', fetch_ai("gemini-1.5-flash", "What is the capital of France?"))
 
-  print(agent_translator("versatile"))
+  #print(agent_translator("versatile"))
