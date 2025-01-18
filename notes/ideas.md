@@ -2,4 +2,4 @@ func to search internet
 
 func to convert image to base64 so it can be uploaded to ai models
 
-renam func fetch_openai/demini/... na call_openai_type_api
+rename func fetch_openai/gemini/... na call_api_type_openai
