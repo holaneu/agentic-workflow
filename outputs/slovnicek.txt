@@ -1,0 +1,12 @@
+cs: "zvláštní"
+en: "odd"
+-----
+
+cs: "zlobivý"
+en: "bad-tempered"
+-----
+
+cs: "úhledný"
+en: "neat"
+-----
+
