@@ -4,6 +4,7 @@ import os
 import requests
 import json
 import re
+import datetime
 
 load_dotenv()
 
@@ -64,8 +65,8 @@ def format_input_as_messages(input):
     return input
 
 
-def fetch_ai(model_name, input):
-  model = get_model(model_name)
+def fetch_ai(model, input):
+  model = get_model(model)
   if model is None:
     return None
   if model['api_type'] == 'openai':
@@ -112,6 +113,11 @@ def call_api_of_type_openai_v2(model, input):
     response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
     if response.status_code == 200:
       result = response.json()
+      log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+      log_filepath = f"logs/ai_response_{log_timestamp}.log"
+      log_content = json.dumps(result, ensure_ascii=False, indent=2)
+      save_to_file(content=log_content, filepath=log_filepath)
+      print(log_content)
       return result["choices"][0]["message"]["content"]
     else:
       print(f"Error: {response.status_code}")
@@ -203,13 +209,24 @@ def open_file(filepath):
 
 def save_to_file(filepath, content):
   try:
+    if content is None:
+      raise ValueError("Content cannot be empty")
+    if not isinstance(content, str):
+      content = str(content)
+      if not isinstance(content, str):
+        raise ValueError("Content must be a convertible to string")
+    if len(content.strip()) == 0:
+      raise ValueError("Content cannot be empty")
     if ".." in filepath or filepath.startswith("/"):
       raise ValueError("Invalid filepath: Path traversal not allowed")    
-    full_path = os.path.join(APP_SETTINGS["output_folder"], filepath)    
+    full_path = os.path.join(APP_SETTINGS["output_folder"], filepath)
     directory = os.path.dirname(full_path)
     if directory and not os.path.exists(directory):
       os.makedirs(directory)
-    content_size = len(content.encode('utf-8'))
+    try:
+      content_size = len(content.encode('utf-8'))
+    except UnicodeEncodeError:
+      raise ValueError("Content contains invalid Unicode characters")
     if content_size > 10 * 1024 * 1024:
       raise ValueError("Content too large: Exceeds 10MB limit")      
     with open(full_path, 'a', encoding='utf-8') as outfile:
@@ -236,16 +253,15 @@ def split_and_strip(content):
 # ----------------------
 # agents:
 
-def agent_translator(input, model=None):
-  # TODO: move agent_name and agent_description to agent config
+def agent_translator_cs_en(input, model=None):
   agent_name = "Translator CS-EN, EN-CS"
   agent_description = "Translates inputs from CS to EN or from EN to CS. Just write your phrase ..."
-  config = {
+  agent_config = {
     "default_model_name": "gemini-1.5-flash", 
     "verbose": True
   }
-  model = model if model is not None else config['default_model_name']
-  system_prompt = """
+  agent_model = model if model is not None else agent_config['default_model_name']
+  agent_instructions = """
   <role_persona>
 Jseš můj jazykový překladač z češtiny do angličtiny a z angličtiny do češtiny. 
 </role_persona>
@@ -264,11 +280,31 @@ en: "<anglický text>"
   """
 
   messages = [
-    {"role": "system", "content": system_prompt},
+    {"role": "system", "content": agent_instructions},
     {"role": "user", "content": input}
   ]
-  response = fetch_ai(model, messages)
-  if config['verbose']:
+  response = fetch_ai(agent_model, messages)
+  if agent_config['verbose']:
+    print(f"\n{agent_name}:\n{response}")
+  return response
+
+
+def agent_summarize_text(input, model=None):
+  agent_name = "Summarize text"
+  agent_description = "Summarizes the input text."
+  agent_config = {
+    "default_model_name": "gemini-1.5-flash", 
+    "verbose": True
+  }
+  agent_model = model if model is not None else agent_config['default_model_name']
+  agent_instructions = """Your task is to generate a concise summary of the key takeaways from the provided text. You should focus on the most important points, ideas, or arguments presented in the text. Your summary should be clear, concise, and accurately represent the main ideas of the original text. Avoid including unnecessary details or personal interpretations. Your goal is to provide a brief overview that someone could read to understand the main points of the text without having to read the entire thing. Whenever possible, utilize simplified language.
+  """
+  messages = [
+    {"role": "system", "content": agent_instructions},
+    {"role": "user", "content": input}
+  ]
+  response = fetch_ai(agent_model, messages)
+  if agent_config['verbose']:
     print(f"\n{agent_name}:\n{response}")
   return response
 
@@ -283,6 +319,44 @@ if __name__ == "__main__":
 
   #print('\ngemini:\n', fetch_ai("gemini-1.5-flash", "What is the capital of France?"))
 
-  translator = agent_translator("leave", model="gpt-4o-mini")
+  """
+  test_translator = agent_translator("leave", model="gpt-4o-mini")
+  save_to_file("test/slovnicek.txt", test_translator)
+  """
+  
+  """
+  test_summarizer = agent_summarize_text(input=open_file("inputs/clanek.txt"), model="gpt-4o-mini")
+  save_to_file("test/summaries.txt", test_summarizer)
+  """
 
-  save_to_file("test/slovnicek.txt", translator)
+  #save_to_file(content=fetch_ai(input="write ahoj", model="mistral-small-latest"), filepath="test/test.txt")
+
+  print(fetch_ai(input="write ahoj", model="mistral-small-latest"))
+
+  """
+  result = {
+    "id": "9eb5ad72379a4dfd86d11d7fdbdbf6c1",
+    "object": "chat.completion",
+    "created": 1737377265,
+    "model": "mistral-small-latest",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",          
+          "content": "Ahoj! That's \"hello\" in Czech. How can I assist you today?"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 7,
+      "total_tokens": 27,
+      "completion_tokens": 20
+    }
+  }
+  log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+  log_filepath = f"ai_response_{log_timestamp}.log"
+  log_content = json.dumps(result, ensure_ascii=False, indent=2)
+  save_to_file(content=log_content, filepath=log_filepath)
+  """
