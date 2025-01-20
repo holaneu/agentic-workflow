@@ -117,7 +117,6 @@ def call_api_of_type_openai_v2(model, input):
       log_filepath = f"logs/ai_response_{log_timestamp}.log"
       log_content = json.dumps(result, ensure_ascii=False, indent=2)
       save_to_file(content=log_content, filepath=log_filepath)
-      print(log_content)
       return result["choices"][0]["message"]["content"]
     else:
       print(f"Error: {response.status_code}")
@@ -329,34 +328,8 @@ if __name__ == "__main__":
   save_to_file("test/summaries.txt", test_summarizer)
   """
 
-  #save_to_file(content=fetch_ai(input="write ahoj", model="mistral-small-latest"), filepath="test/test.txt")
+  save_to_file(content=fetch_ai(input="write ahoj", model="mistral-small-latest"), filepath="test/test.txt")
 
-  print(fetch_ai(input="write ahoj", model="mistral-small-latest"))
+  #print(fetch_ai(input="write ahoj", model="mistral-small-latest"))
 
-  """
-  result = {
-    "id": "9eb5ad72379a4dfd86d11d7fdbdbf6c1",
-    "object": "chat.completion",
-    "created": 1737377265,
-    "model": "mistral-small-latest",
-    "choices": [
-      {
-        "index": 0,
-        "message": {
-          "role": "assistant",          
-          "content": "Ahoj! That's \"hello\" in Czech. How can I assist you today?"
-        },
-        "finish_reason": "stop"
-      }
-    ],
-    "usage": {
-      "prompt_tokens": 7,
-      "total_tokens": 27,
-      "completion_tokens": 20
-    }
-  }
-  log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-  log_filepath = f"ai_response_{log_timestamp}.log"
-  log_content = json.dumps(result, ensure_ascii=False, indent=2)
-  save_to_file(content=log_content, filepath=log_filepath)
-  """
+ 
