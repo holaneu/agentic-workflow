@@ -250,17 +250,17 @@ def split_and_strip(content):
 
 
 # ----------------------
-# agents:
+# assistants / ai functions:
 
-def agent_translator_cs_en(input, model=None):
-  agent_name = "Translator CS-EN, EN-CS"
-  agent_description = "Translates inputs from CS to EN or from EN to CS. Just write your phrase ..."
-  agent_config = {
+def assistant_translator_cs_en(input, assistant_model=None):
+  assistant_name = "Translator CS-EN, EN-CS"
+  assistant_description = "Translates inputs from CS to EN or from EN to CS. Just write your phrase ..."
+  assistant_config = {
     "default_model_name": "gemini-1.5-flash", 
     "verbose": True
   }
-  agent_model = model if model is not None else agent_config['default_model_name']
-  agent_instructions = """
+  assistant_model = assistant_model if assistant_model is not None else assistant_config['default_model_name']
+  assistant_instructions = """
   <role_persona>
 Jseš můj jazykový překladač z češtiny do angličtiny a z angličtiny do češtiny. 
 </role_persona>
@@ -279,33 +279,52 @@ en: "<anglický text>"
   """
 
   messages = [
-    {"role": "system", "content": agent_instructions},
+    {"role": "system", "content": assistant_instructions},
     {"role": "user", "content": input}
   ]
-  response = fetch_ai(agent_model, messages)
-  if agent_config['verbose']:
-    print(f"\n{agent_name}:\n{response}")
+  response = fetch_ai(assistant_model, messages)
+  if assistant_config['verbose']:
+    print(f"\n{assistant_name}:\n{response}")
   return response
 
 
-def agent_summarize_text(input, model=None):
-  agent_name = "Summarize text"
-  agent_description = "Summarizes the input text."
-  agent_config = {
+def assistant_summarize_text(input, model=None):
+  assistant_name = "Summarize text"
+  assistant_description = "Summarizes the input text."
+  assistant_config = {
     "default_model_name": "gemini-1.5-flash", 
     "verbose": True
   }
-  agent_model = model if model is not None else agent_config['default_model_name']
-  agent_instructions = """Your task is to generate a concise summary of the key takeaways from the provided text. You should focus on the most important points, ideas, or arguments presented in the text. Your summary should be clear, concise, and accurately represent the main ideas of the original text. Avoid including unnecessary details or personal interpretations. Your goal is to provide a brief overview that someone could read to understand the main points of the text without having to read the entire thing. Whenever possible, utilize simplified language.
+  assistant_model = model if model is not None else assistant_config['default_model_name']
+  assistant_instructions = """Your task is to generate a concise summary of the key takeaways from the provided text. You should focus on the most important points, ideas, or arguments presented in the text. Your summary should be clear, concise, and accurately represent the main ideas of the original text. Avoid including unnecessary details or personal interpretations. Your goal is to provide a brief overview that someone could read to understand the main points of the text without having to read the entire thing. Whenever possible, utilize simplified language.
   """
   messages = [
-    {"role": "system", "content": agent_instructions},
+    {"role": "system", "content": assistant_instructions},
     {"role": "user", "content": input}
   ]
-  response = fetch_ai(agent_model, messages)
-  if agent_config['verbose']:
-    print(f"\n{agent_name}:\n{response}")
+  response = fetch_ai(assistant_model, messages)
+  if assistant_config['verbose']:
+    print(f"\n{assistant_name}:\n{response}")
   return response
+
+
+def workflow_translation_out_yaml(input, model):
+  if input is None:
+    return None 
+  translation = assistant_translator_cs_en(input=input, assistant_model=model)
+  if translation is None:
+    return None  
+  save_to_file("test/slovnicek.txt", translation)
+
+
+def workflow_summarization(input, model):
+  if input is None:
+    return None 
+  summarization = assistant_summarize_text(input=input, model=model)
+  if summarization is None:
+    return None  
+  summarization = summarization.strip() + "\n\n-----\n\n"
+  save_to_file("test/summaries.txt", summarization)
 
 
 # ----------------------
@@ -318,18 +337,11 @@ if __name__ == "__main__":
 
   #print('\ngemini:\n', fetch_ai("gemini-1.5-flash", "What is the capital of France?"))
 
-  """
-  test_translator = agent_translator("leave", model="gpt-4o-mini")
-  save_to_file("test/slovnicek.txt", test_translator)
-  """
-  
-  """
-  test_summarizer = agent_summarize_text(input=open_file("inputs/clanek.txt"), model="gpt-4o-mini")
-  save_to_file("test/summaries.txt", test_summarizer)
-  """
-
-  save_to_file(content=fetch_ai(input="write ahoj", model="mistral-small-latest"), filepath="test/test.txt")
+  #save_to_file(content=fetch_ai(input="write ahoj", model="mistral-small-latest"), filepath="test/test.txt")
 
   #print(fetch_ai(input="write ahoj", model="mistral-small-latest"))
 
- 
+  #workflow_translation_out_yaml(input="kinda", model="gemini-1.5-flash")
+
+  workflow_summarization(input="Profesora Cyrila Höschla asi nemusím představovat. Je kapacitou mezinárodní psychiatrie a asi ho všichni známe také jako popularizátora vědy s darem hovořit o složitých věcech tak, že jim rozumí i laik. Tak jsme se sešli na Hausbotu. Ptal jsem se na složité věci a Cyril Höschl jednoduše a parádně odpovídal. Co s námi dělají sociální sítě a mobily? Kde se v nás bere dobro a zlo? Je stres doopravdy špatný? Co s námi dělá láska a a kde se bere? Co se děje se současným světem?", model="gpt-4o-mini")
+
