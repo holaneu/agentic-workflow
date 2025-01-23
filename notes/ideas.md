@@ -1,4 +1,10 @@
 
+integrate antropic api
+
+integrate llama api
+
+integrate deepseek api
+
 workflow: story_writing
   input
   create criteria (assistant: story criteria creator)

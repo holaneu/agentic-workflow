@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text Processing Workflows</title>
+    <style>
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            margin-bottom: 20px;
+        }
+        select {
+            margin-bottom: 20px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Processing Workflows</h1>
+        
+        <textarea id="input" placeholder="Enter your text here..."></textarea>
+        
+        <select id="workflow">
+            {% for id, workflow in workflows.items() %}
+                <option value="{{ id }}">{{ workflow.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <button onclick="processText()">Process</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function processText() {
+            const input = document.getElementById('input').value;
+            const workflow = document.getElementById('workflow').value;
+            const resultDiv = document.getElementById('result');
+            
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ input, workflow })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    resultDiv.innerHTML = 'Processing completed successfully';
+                } else {
+                    resultDiv.innerHTML = `Error: ${data.error}`;
+                }
+            } catch (e) {
+                resultDiv.innerHTML = `Error: ${e.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

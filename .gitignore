@@ -1,3 +1,5 @@
+
+# Private files
 private/
 test/
 
@@ -11,6 +13,10 @@ venv/
 # Dependency files
 node_modules/
 vendor/
+
+# Python generated files
+_pycache_/
+*.pyc
 
 # OS generated files
 .DS_Store
