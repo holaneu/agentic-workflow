@@ -16,7 +16,7 @@ load_dotenv()
 # Application Settings
 APP_SETTINGS = {
   "output_folder": "outputs",
-  "logs_folder": "_logs",
+  "logs_folder": "logs",
   # Add other app-wide settings here
 }
 

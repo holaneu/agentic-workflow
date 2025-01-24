@@ -1,66 +1,161 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Text Processing Workflows</title>
-    <style>
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px;
-        }
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            margin-bottom: 20px;
-        }
-        select {
-            margin-bottom: 20px;
-            padding: 5px;
-        }
-    </style>
+  <title>Workflows</title>
+  <style>
+    :root {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --accent: #646cff;
+      --accent-hover: #7c83ff;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, system-ui, sans-serif;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: var(--text-primary);
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background-color: var(--bg-secondary);
+      border: 1px solid #404040;
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1.5rem;
+      background-color: var(--bg-secondary);
+      border: 1px solid #404040;
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: var(--text-primary);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    #result {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: var(--bg-secondary);
+    }
+
+    .error {
+      color: #ff6b6b;
+    }
+
+    .success {
+      color: #69db7c;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Text Processing Workflows</h1>
+  <div class="container">
+    <h1>Workflows</h1>
+    
+    <textarea id="input" placeholder="Enter your text input here ..."></textarea>
+    
+    <select id="workflow">
+      {% for id, workflow in workflows.items() %}
+      <option value="{{ id }}">{{ workflow.name }}</option>
+      {% endfor %}
+    </select>
+    
+    <button onclick="processText()">Start workflow</button>
+    
+    <div id="result"></div>
+  </div>
+  
+  <script>    
+    const uiConfigs = {
+      labels: {
+        empty_input_error: "<span class='error'>Please enter some text to process</span>",
+        workflow_success: "<span class='success'>✓ Workflow completed successfully</span>"
+      },
+    };  
+    
+    async function processText() {      
+      const inputText = document.getElementById('input');
+      const workflowSelection = document.getElementById('workflow');
+      const resultDiv = document.getElementById('result');
+      
+      resultDiv.innerHTML = '';
+      
+      // Validate input
+      if (!inputText.value.trim()) {
+        resultDiv.innerHTML = uiConfigs.labels.empty_input_error;
+        return;
+      }
+      
+      try {
+        const response = await fetch('/process', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            input: inputText.value, 
+            workflow: workflowSelection.value 
+          })
+        });
         
-        <textarea id="input" placeholder="Enter your text here..."></textarea>
-        
-        <select id="workflow">
-            {% for id, workflow in workflows.items() %}
-                <option value="{{ id }}">{{ workflow.name }}</option>
-            {% endfor %}
-        </select>
-        
-        <button onclick="processText()">Process</button>
-        
-        <div id="result"></div>
-    </div>
-
-    <script>
-        async function processText() {
-            const input = document.getElementById('input').value;
-            const workflow = document.getElementById('workflow').value;
-            const resultDiv = document.getElementById('result');
-            
-            try {
-                const response = await fetch('/process', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ input, workflow })
-                });
-                
-                const data = await response.json();
-                if (response.ok) {
-                    resultDiv.innerHTML = 'Processing completed successfully';
-                } else {
-                    resultDiv.innerHTML = `Error: ${data.error}`;
-                }
-            } catch (e) {
-                resultDiv.innerHTML = `Error: ${e.message}`;
-            }
+        const data = await response.json();
+        if (response.ok) {
+          resultDiv.innerHTML = uiConfigs.labels.workflow_success;
+        } else {
+          resultDiv.innerHTML = `Error: ${data.error}`;
         }
-    </script>
+      } catch (e) {
+        resultDiv.innerHTML = `Error: ${e.message}`;
+      }
+    }
+  </script>
 </body>
 </html>

@@ -8,7 +8,7 @@ WORKFLOWS = {
     'translate': {
         'name': 'Translation CS-EN',
         'function': workflow_translation_out_yaml,
-        'model': 'gemini-1.5-flash'
+        'model': 'gpt-4o-mini' #'gemini-1.5-flash'
     },
     'summarize': {
         'name': 'Text Summarization', 
