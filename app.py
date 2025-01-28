@@ -114,6 +114,7 @@ def call_api_of_type_openai_v2(model, input):
     response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
     if response.status_code == 200:
       result = response.json()
+      print(result)
       log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
       log_filepath = f"logs/ai_response_{log_timestamp}.log"
       log_content = json.dumps(result, ensure_ascii=False, indent=2)

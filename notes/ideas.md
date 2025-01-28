@@ -1,4 +1,9 @@
 
+show reponse in the UI (pass response retrieved within app.py workflow to the server - index.html)
+
+logging of workflows
+  - own json data structure for workflow
+
 integrate antropic api
 
 integrate llama api
