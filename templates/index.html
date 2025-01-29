@@ -18,7 +18,10 @@
     
     <button onclick="processText()">Start workflow</button>
     
-    <div id="result"></div>
+    <div id="result">
+      <div class="status"></div>
+      <div class="response"></div>
+    </div>
   </div>
   
   <script>    
@@ -30,22 +33,32 @@
       },
     };  
     
+    function formatResponse(response) {
+      if (typeof response === 'object') {
+        return `<pre class="response-data">${JSON.stringify(response, null, 2)}</pre>`;
+      }
+      return `<div class="response-data">${response}</div>`;
+    }
+
     async function processText() {      
       const inputText = document.getElementById('input');
       const workflowSelection = document.getElementById('workflow');
       const resultDiv = document.getElementById('result');
+      const statusDiv = resultDiv.querySelector('.status');
+      const responseDiv = resultDiv.querySelector('.response');
       
-      resultDiv.innerHTML = '';
+      statusDiv.innerHTML = '';
+      responseDiv.innerHTML = '';
       
       // Validate input
       if (!inputText.value.trim()) {
-        resultDiv.innerHTML = uiConfigs.labels.empty_input_error;
+        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
         return;
       }
 
       // Validate workflow selection
       if (!workflowSelection.value) {
-        resultDiv.innerHTML = uiConfigs.labels.select_workflow_error;
+        statusDiv.innerHTML = uiConfigs.labels.select_workflow_error;
         return;
       }
       
@@ -63,16 +76,17 @@
         
         const data = await response.json();
         if (response.ok) {
-          resultDiv.innerHTML = uiConfigs.labels.workflow_success;
-          // Reset workflow selection
+          statusDiv.innerHTML = uiConfigs.labels.workflow_success;
+          responseDiv.innerHTML = formatResponse(data.response);
           workflowSelection.value = "";
         } else {
-          resultDiv.innerHTML = `Error: ${data.error}`;
+          statusDiv.innerHTML = `<span class='error'>Error: ${data.error}</span>`;
         }
       } catch (e) {
-        resultDiv.innerHTML = `Error: ${e.message}`;
+        statusDiv.innerHTML = `<span class='error'>Error: ${e.message}</span>`;
       }
     }
   </script>
+
 </body>
 </html>

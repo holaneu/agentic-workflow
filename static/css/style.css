@@ -89,3 +89,14 @@ button:hover {
 .success {
   color: #69db7c;
 }
+
+.response-data {
+  margin: 10px 0;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  font-family: monospace;
+  max-height: 500px;
+  overflow-y: auto;
+}

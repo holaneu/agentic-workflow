@@ -50,13 +50,17 @@ def process():
         if not workflow:
             return jsonify({'error': 'Invalid workflow'}), 400
             
-        # Execute the selected workflow
+        # Execute the selected workflow and get response
         result = workflow['function'](
             input=input_text,
             model=workflow['model']
         )
         
-        return jsonify({'success': True})
+        # Return the workflow result
+        return jsonify({
+            'success': True,
+            'response': result
+        })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

@@ -401,35 +401,35 @@ def assistant_summarize_video_transcription(input, model=None):
    - You are an assistant tasked with summarizing video transcripts.
    - Your goal is to split the transcript into logical chapters and summarize the key takeaways of each chapter.
 
-2. **Task Overview**
-   - Read the provided transcript carefully and in its entirety.
-   - Identify natural chapter divisions based on the content.
-   - For each chapter, write a brief summary highlighting the key points and takeaways.
+  2. **Task Overview**
+    - Read the provided transcript carefully and in its entirety.
+    - Identify natural chapter divisions based on the content.
+    - For each chapter, write a brief summary highlighting the key points and takeaways.
 
-3. **Step-by-Step Instructions**
-   - **Step 1:** Read through the entire transcript to understand the overall content and context.
-   - **Step 2:** Identify logical breaks in the content to create chapters. These breaks could be based on topic changes, new sections, or shifts in the discussion.
-   - **Step 3:** For each identified chapter, write a summary that captures the main ideas, key points, and important takeaways.
-   - **Step 4:** Ensure that each summary is concise, clear, and accurately reflects the content of the chapter.
-   - **Step 5:** Review the summaries to ensure they are comprehensive and coherent.
+  3. **Step-by-Step Instructions**
+    - **Step 1:** Read through the entire transcript to understand the overall content and context.
+    - **Step 2:** Identify logical breaks in the content to create chapters. These breaks could be based on topic changes, new sections, or shifts in the discussion.
+    - **Step 3:** For each identified chapter, write a summary that captures the main ideas, key points, and important takeaways.
+    - **Step 4:** Ensure that each summary is concise, clear, and accurately reflects the content of the chapter.
+    - **Step 5:** Review the summaries to ensure they are comprehensive and coherent.
 
-4. **Formatting Guidelines**
-   - Start each chapter summary with a heading indicating the chapter number or title.
-   - Use bullet points or short paragraphs for clarity and readability.
-   - Maintain a consistent and neutral tone throughout the summaries.
+  4. **Formatting Guidelines**
+    - Start each chapter summary with a heading indicating the chapter number or title.
+    - Use bullet points or short paragraphs for clarity and readability.
+    - Maintain a consistent and neutral tone throughout the summaries.
 
-5. **Example**
-   - **Chapter 1: Introduction**
-     - The speaker introduces the topic of the video.
-     - Key points discussed include the purpose of the video, the main topics to be covered, and an overview of what the audience can expect to learn.
-   - **Chapter 2: Main Topic Discussion**
-     - The speaker delves into the main topic, explaining the key concepts in detail.
-     - Important takeaways include definitions, explanations, and examples provided by the speaker.
+  5. **Example**
+    - **Chapter 1: Introduction**
+      - The speaker introduces the topic of the video.
+      - Key points discussed include the purpose of the video, the main topics to be covered, and an overview of what the audience can expect to learn.
+    - **Chapter 2: Main Topic Discussion**
+      - The speaker delves into the main topic, explaining the key concepts in detail.
+      - Important takeaways include definitions, explanations, and examples provided by the speaker.
 
-6. **Quality Assurance**
-   - Double-check each summary for accuracy and completeness.
-   - Ensure that the summaries are free of grammatical errors and are easy to understand.
-   - Verify that the chapter divisions make sense and flow logically from one to the next."""
+  6. **Quality Assurance**
+    - Double-check each summary for accuracy and completeness.
+    - Ensure that the summaries are free of grammatical errors and are easy to understand.
+    - Verify that the chapter divisions make sense and flow logically from one to the next."""
 
   messages = [
     {"role": "system", "content": assistant_instructions},
@@ -489,8 +489,9 @@ def workflow_translation_out_yaml(input, model):
   translation = assistant_translator_cs_en_yaml(input=input, assistant_model=model)
   if translation is None:
     return None
-  translation = translation.strip() + "\n\n-----\n"
-  save_to_file("test/slovnicek.txt", translation)
+  translation = translation.strip()
+  save_to_file("test/slovnicek.txt", translation + "\n\n-----\n", prepend=True)
+  return translation
 
 
 def workflow_summarization(input, model):
@@ -499,8 +500,9 @@ def workflow_summarization(input, model):
   summarization = assistant_summarize_text(input=input, model=model)
   if summarization is None:
     return None  
-  summarization = summarization.strip() + "\n\n-----\n"
-  save_to_file("test/summaries.txt", summarization, prepend=True)
+  summarization = summarization.strip()
+  save_to_file("test/summaries.txt", summarization + "\n\n-----\n", prepend=True)
+  return summarization
 
 
 def workflow_situation_analysis(input, model):
@@ -509,8 +511,9 @@ def workflow_situation_analysis(input, model):
   analysis = assistant_analyze_situation(input=input, model=model)
   if analysis is None:
     return None  
-  analysis = analysis.strip() + "\n\n-----\n"
-  save_to_file("test/situace.txt", analysis, prepend=True)
+  analysis = analysis.strip()
+  save_to_file("test/situace.txt", analysis + "\n\n-----\n", prepend=True)
+  return analysis
 
 
 def workflow_video_transcription_summarization(input, model):
@@ -519,8 +522,9 @@ def workflow_video_transcription_summarization(input, model):
   summarization = assistant_summarize_video_transcription(input=input, model=model)
   if summarization is None:
     return None  
-  summarization = summarization.strip() + "\n\n-----\n"
-  save_to_file("test/video_transcript_summaries.txt", summarization, prepend=True)
+  summarization = summarization.strip()
+  save_to_file("test/video_transcript_summaries.txt", summarization + "\n\n-----\n", prepend=True)
+  return summarization
 
 
 def workflow_explain_simply_lexicon(input, model):
@@ -529,8 +533,9 @@ def workflow_explain_simply_lexicon(input, model):
   lexicon = assistant_explain_simply_lexicon(input=input, model=model)
   if lexicon is None:
     return None  
-  lexicon = lexicon.strip() + "\n\n-----\n"
-  save_to_file("test/lexicon.txt", lexicon, prepend=True)
+  lexicon = lexicon.strip()
+  save_to_file("test/lexicon.txt", lexicon + "\n\n-----\n", prepend=True)
+  return lexicon
 
 
 # ----------------------
