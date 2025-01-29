@@ -1,3 +1,6 @@
+render markdown within UI, in "response section"
+
+vlastni dat. struktura (pro konverzace, workflows, assistanty atd.), prenos dat/zprav mezi funkcemi (input/output), cast z toho pouzitelne pro logovani, zpetne pujde (ulozene do souboru) prochazet a filtrovat, vyhledavat, analyzovat.
 
 show reponse in the UI (pass response retrieved within app.py workflow to the server - index.html)
 
