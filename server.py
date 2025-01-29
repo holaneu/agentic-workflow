@@ -1,36 +1,7 @@
 from flask import Flask, request, render_template, jsonify
-from app import workflow_translation_out_yaml, workflow_summarization, workflow_situation_analysis, workflow_video_transcription_summarization, workflow_explain_simply_lexicon
+from workflows import WORKFLOWS
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-
-# Define available workflows
-WORKFLOWS = {
-    'translate': {
-        'name': 'Translation CS-EN (YAML)',
-        'function': workflow_translation_out_yaml,
-        'model': 'gpt-4o-mini' #'gemini-1.5-flash'
-    },
-    'summarize': {
-        'name': 'Text Summarization', 
-        'function': workflow_summarization,
-        'model': 'gpt-4o-mini'
-    },
-    'analyze_situation': {
-        'name': 'Analyze situation', 
-        'function': workflow_situation_analysis,
-        'model': 'gpt-4o'
-    },
-    'summarize_video_transcription': {
-        'name': 'summarize_video_transcription', 
-        'function': workflow_video_transcription_summarization,
-        'model': 'gpt-4o'
-    },
-    'explain_simply_lexicon': {
-      'name': 'explain_simply_lexicon', 
-      'function': workflow_explain_simply_lexicon,
-      'model': 'gpt-4o'
-    }
-}
 
 @app.route('/')
 def index():

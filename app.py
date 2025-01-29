@@ -6,6 +6,7 @@ import json
 import re
 import datetime
 from flask import Flask, request, render_template, jsonify
+from workflows import WORKFLOWS
 
 load_dotenv()
 
@@ -478,66 +479,6 @@ def assistant_explain_simply_lexicon(input, model=None):
   return response
 
 
-
-# ----------------------
-#   WORKFLOWS
-# ----------------------
-
-def workflow_translation_out_yaml(input, model):
-  if input is None:
-    return None 
-  translation = assistant_translator_cs_en_yaml(input=input, assistant_model=model)
-  if translation is None:
-    return None
-  translation = translation.strip()
-  save_to_file("test/slovnicek.txt", translation + "\n\n-----\n", prepend=True)
-  return translation
-
-
-def workflow_summarization(input, model):
-  if input is None:
-    return None 
-  summarization = assistant_summarize_text(input=input, model=model)
-  if summarization is None:
-    return None  
-  summarization = summarization.strip()
-  save_to_file("test/summaries.txt", summarization + "\n\n-----\n", prepend=True)
-  return summarization
-
-
-def workflow_situation_analysis(input, model):
-  if input is None:
-    return None 
-  analysis = assistant_analyze_situation(input=input, model=model)
-  if analysis is None:
-    return None  
-  analysis = analysis.strip()
-  save_to_file("test/situace.txt", analysis + "\n\n-----\n", prepend=True)
-  return analysis
-
-
-def workflow_video_transcription_summarization(input, model):
-  if input is None:
-    return None 
-  summarization = assistant_summarize_video_transcription(input=input, model=model)
-  if summarization is None:
-    return None  
-  summarization = summarization.strip()
-  save_to_file("test/video_transcript_summaries.txt", summarization + "\n\n-----\n", prepend=True)
-  return summarization
-
-
-def workflow_explain_simply_lexicon(input, model):
-  if input is None:
-    return None 
-  lexicon = assistant_explain_simply_lexicon(input=input, model=model)
-  if lexicon is None:
-    return None  
-  lexicon = lexicon.strip()
-  save_to_file("test/lexicon.txt", lexicon + "\n\n-----\n", prepend=True)
-  return lexicon
-
-
 # ----------------------
 # playground:
 
@@ -550,13 +491,7 @@ if __name__ == "__main__":
 
   #save_to_file(content=fetch_ai(input="write ahoj", model="mistral-small-latest"), filepath="test/test.txt")
 
-  #print(fetch_ai(input="write ahoj", model="mistral-small-latest"))
+  #print(fetch_ai(input="write ahoj", model="mistral-small-latest"))  
 
-  #workflow_translation_out_yaml(input="kinda", model="gemini-1.5-flash")
-
-  #workflow_summarization(input="Profesora Cyrila Höschla asi nemusím představovat. Je kapacitou mezinárodní psychiatrie a asi ho všichni známe také jako popularizátora vědy s darem hovořit o složitých věcech tak, že jim rozumí i laik. Tak jsme se sešli na Hausbotu. Ptal jsem se na složité věci a Cyril Höschl jednoduše a parádně odpovídal. Co s námi dělají sociální sítě a mobily? Kde se v nás bere dobro a zlo? Je stres doopravdy špatný? Co s námi dělá láska a a kde se bere? Co se děje se současným světem?", model="gpt-4o-mini")
-
-  #workflow_explain_simply_lexicon(input="ironie", model="gpt-4o-mini")
-
-  print("ahoj")
+  print(WORKFLOWS['translation_out_yaml']['function']("porek", "gpt-4o"))
 
