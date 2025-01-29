@@ -1,21 +1,7 @@
 from flask import Flask, request, render_template, jsonify
-from app import workflow_translation_out_yaml, workflow_summarization
+from workflows import WORKFLOWS
 
-app = Flask(__name__)
-
-# Define available workflows
-WORKFLOWS = {
-    'translate': {
-        'name': 'Translation CS-EN',
-        'function': workflow_translation_out_yaml,
-        'model': 'gemini-1.5-flash'
-    },
-    'summarize': {
-        'name': 'Text Summarization', 
-        'function': workflow_summarization,
-        'model': 'gpt-4o-mini'
-    }
-}
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
 @app.route('/')
 def index():
@@ -35,13 +21,17 @@ def process():
         if not workflow:
             return jsonify({'error': 'Invalid workflow'}), 400
             
-        # Execute the selected workflow
+        # Execute the selected workflow and get response
         result = workflow['function'](
             input=input_text,
             model=workflow['model']
         )
         
-        return jsonify({'success': True})
+        # Return the workflow result
+        return jsonify({
+            'success': True,
+            'response': result
+        })
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500

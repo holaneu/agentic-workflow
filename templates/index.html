@@ -1,66 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Text Processing Workflows</title>
-    <style>
-        .container { 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px;
-        }
-        textarea {
-            width: 100%;
-            min-height: 200px;
-            margin-bottom: 20px;
-        }
-        select {
-            margin-bottom: 20px;
-            padding: 5px;
-        }
-    </style>
+  <title>Workflows</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <h1>Text Processing Workflows</h1>
-        
-        <textarea id="input" placeholder="Enter your text here..."></textarea>
-        
-        <select id="workflow">
-            {% for id, workflow in workflows.items() %}
-                <option value="{{ id }}">{{ workflow.name }}</option>
-            {% endfor %}
-        </select>
-        
-        <button onclick="processText()">Process</button>
-        
-        <div id="result"></div>
+  <div class="container">
+    <h1>Workflows</h1>    
+    <textarea id="input" placeholder="Enter your text input here ..."></textarea>
+    
+    <select id="workflow">
+      <option value="" disabled selected>Please select workflow</option>
+      {% for id, workflow in workflows.items() %}
+      <option value="{{ id }}">{{ workflow.name }}</option>
+      {% endfor %}
+    </select>
+    
+    <button onclick="processText()">Start workflow</button>
+    
+    <div id="result">
+      <div class="status"></div>
+      <div class="response"></div>
     </div>
+  </div>
+  
+  <script>    
+    const uiConfigs = {
+      labels: {
+        empty_input_error: "<span class='error'>Please enter some text to process</span>",
+        workflow_success: "<span class='success'>✓ Workflow completed successfully</span>",
+        select_workflow_error: "<span class='error'>Please select a workflow</span>"
+      },
+    };  
+    
+    function formatResponse(response) {
+      if (typeof response === 'object') {
+        return `<pre class="response-data">${JSON.stringify(response, null, 2)}</pre>`;
+      }
+      return `<div class="response-data">${response}</div>`;
+    }
 
-    <script>
-        async function processText() {
-            const input = document.getElementById('input').value;
-            const workflow = document.getElementById('workflow').value;
-            const resultDiv = document.getElementById('result');
-            
-            try {
-                const response = await fetch('/process', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ input, workflow })
-                });
-                
-                const data = await response.json();
-                if (response.ok) {
-                    resultDiv.innerHTML = 'Processing completed successfully';
-                } else {
-                    resultDiv.innerHTML = `Error: ${data.error}`;
-                }
-            } catch (e) {
-                resultDiv.innerHTML = `Error: ${e.message}`;
-            }
+    async function processText() {      
+      const inputText = document.getElementById('input');
+      const workflowSelection = document.getElementById('workflow');
+      const resultDiv = document.getElementById('result');
+      const statusDiv = resultDiv.querySelector('.status');
+      const responseDiv = resultDiv.querySelector('.response');
+      
+      statusDiv.innerHTML = '';
+      responseDiv.innerHTML = '';
+      
+      // Validate input
+      if (!inputText.value.trim()) {
+        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
+        return;
+      }
+
+      // Validate workflow selection
+      if (!workflowSelection.value) {
+        statusDiv.innerHTML = uiConfigs.labels.select_workflow_error;
+        return;
+      }
+      
+      try {
+        const response = await fetch('/process', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            input: inputText.value, 
+            workflow: workflowSelection.value 
+          })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          statusDiv.innerHTML = uiConfigs.labels.workflow_success;
+          responseDiv.innerHTML = formatResponse(data.response);
+          workflowSelection.value = "";
+        } else {
+          statusDiv.innerHTML = `<span class='error'>Error: ${data.error}</span>`;
         }
-    </script>
+      } catch (e) {
+        statusDiv.innerHTML = `<span class='error'>Error: ${e.message}</span>`;
+      }
+    }
+  </script>
 </body>
 </html>

@@ -1,4 +1,23 @@
 
+UI - file attachments (documents, text files, images, sound files?)
+
+integrate some OCR functions
+
+integrate openai whisper api
+
+integrate github repo commit/push
+
+integrate eleven labs api
+
+render markdown within UI, in "response section"
+
+vlastni dat. struktura (pro konverzace, workflows, assistanty atd.), prenos dat/zprav mezi funkcemi (input/output), cast z toho pouzitelne pro logovani, zpetne pujde (ulozene do souboru) prochazet a filtrovat, vyhledavat, analyzovat.
+
+show reponse in the UI (pass response retrieved within app.py workflow to the server - index.html)
+
+logging of workflows
+  - own json data structure for workflow
+
 integrate antropic api
 
 integrate llama api
@@ -15,9 +34,6 @@ workflow: story_writing
   update story based on feedback from critical reader (assistant: writer)
   final output
 
-lexicon (vykladovy slovnik)
-
-video transcript summarization
 
 get text content from url
 
