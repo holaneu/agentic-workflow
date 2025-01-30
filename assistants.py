@@ -1,14 +1,27 @@
 from tools import fetch_ai
 
-def assistant_translator_cs_en_yaml(input, assistant_model=None):
-    assistant_name = "Translator CS-EN, EN-CS"
-    assistant_description = "Translates inputs from CS to EN or from EN to CS. Just write your phrase ..."
-    assistant_config = {
-        "default_model_name": "gemini-1.5-flash", 
+def assistant(**kwargs):
+    """Decorator to define assistant functions with metadata."""
+    def decorator(func):
+        func.id = func.__name__  # Automatically set id to the function name
+        func.name = kwargs.get('name', func.__name__.replace('', '').replace('_', ' '))  # Use function name as default name
+        func.description = kwargs.get('description', func.__doc__)  # Use function docstring if no description
+        func.model = kwargs.get('model', None)  # Assign None if model is not provided
+        func.category = kwargs.get('category', None)  # Assign None if category is not provided
+        func.is_assistant = True
+        return func
+    return decorator
+
+
+@assistant(name='Translator CS-EN (YAML)')
+def assistant_translator_cs_en_yaml(input, model=None):
+    """Translates inputs from CS to EN or from EN to CS and outputs in YAML format."""
+    config = {
+        "default_model_name": "gpt-4o-mini", 
         "verbose": True
     }
-    assistant_model = assistant_model if assistant_model is not None else assistant_config['default_model_name']
-    assistant_instructions = """
+    model = model if model is not None else config['default_model_name']
+    instructions = """
     <role_persona>
     Jseš můj jazykový překladač z češtiny do angličtiny a z angličtiny do češtiny. 
     </role_persona>
@@ -26,45 +39,45 @@ def assistant_translator_cs_en_yaml(input, assistant_model=None):
     """
 
     messages = [
-        {"role": "system", "content": assistant_instructions},
+        {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(assistant_model, messages)
-    if assistant_config['verbose']:
-        print(f"\n{assistant_name}:\n{response}")
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
     return response
 
+@assistant()
 def assistant_summarize_text(input, model=None):
-    assistant_name = "Summarize text"
-    assistant_description = "Summarizes the input text."
-    assistant_config = {
+    """Summarizes the input text."""
+    config = {
         "default_model_name": "gemini-1.5-flash", 
         "verbose": True
     }
-    assistant_model = model if model is not None else assistant_config['default_model_name']
-    assistant_instructions = """Your task is to generate a concise summary of the key takeaways from the provided text. 
+    model = model if model is not None else config['default_model_name']
+    instructions = """Your task is to generate a concise summary of the key takeaways from the provided text. 
     Focus on the most important points, ideas, or arguments. Your summary should be clear, concise, and accurately represent 
     the main ideas. Avoid unnecessary details or personal interpretations. Provide a brief overview that captures the essence 
     of the text. Use simplified language whenever possible."""
 
     messages = [
-        {"role": "system", "content": assistant_instructions},
+        {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(assistant_model, messages)
-    if assistant_config['verbose']:
-        print(f"\n{assistant_name}:\n{response}")
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
     return response
 
+@assistant()
 def assistant_analyze_situation(input, model=None):
-    assistant_name = "Analýza situací"
-    assistant_description = "Analyzuje popsanou situaci a vytváří strukturovaný přehled."
-    assistant_config = {
+    """Analyzuje popsanou situaci a vytváří strukturovaný přehled."""
+    config = {
         "default_model_name": "gpt-4o",
         "verbose": True
     }
-    assistant_model = model if model is not None else assistant_config['default_model_name']
-    assistant_instructions = """<role_persona>
+    model = model if model is not None else config['default_model_name']
+    instructions = """<role_persona>
     Jseš expert na analýzu situací a jejich rozbor.
     </role_persona>
 
@@ -94,23 +107,23 @@ def assistant_analyze_situation(input, model=None):
     </output_template>"""
 
     messages = [
-        {"role": "system", "content": assistant_instructions},
+        {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(assistant_model, messages)
-    if assistant_config['verbose']:
-        print(f"\n{assistant_name}:\n{response}")
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
     return response
 
-def assistant_summarize_video_transcription(input, model=None):
-    assistant_name = "Summarize Video Transcript"
-    assistant_description = "Creates chapter-based summary of video transcription."
-    assistant_config = {
+@assistant()
+def assistant_summarize_video_transcript(input, model=None):
+    """Creates chapter-based summary of video transcription."""
+    config = {
         "default_model_name": "gpt-4o",
         "verbose": True
     }
-    assistant_model = model if model is not None else assistant_config['default_model_name']
-    assistant_instructions = """Analyze the video transcript and create a structured summary following these steps:
+    model = model if model is not None else config['default_model_name']
+    instructions = """Analyze the video transcript and create a structured summary following these steps:
     1. Identify natural chapter breaks based on content shifts
     2. Create logical chapters with clear titles
     3. Summarize key points for each chapter
@@ -124,23 +137,23 @@ def assistant_summarize_video_transcription(input, model=None):
        - Key point 2"""
 
     messages = [
-        {"role": "system", "content": assistant_instructions},
+        {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(assistant_model, messages)
-    if assistant_config['verbose']:
-        print(f"\n{assistant_name}:\n{response}")
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
     return response
 
+@assistant()
 def assistant_explain_simply_lexicon(input, model=None):
-    assistant_name = "Výkladový slovník"
-    assistant_description = "Vysvětluje pojmy jednoduchým jazykem pro děti."
-    assistant_config = {
+    """Vysvětluje pojmy jednoduchým jazykem pro děti."""
+    config = {
         "default_model_name": "gpt-4o",
         "verbose": True
     }
-    assistant_model = model if model is not None else assistant_config['default_model_name']
-    assistant_instructions = """Vysvětli pojem tak, aby to pochopilo dítě 4. třídy základní školy.
+    model = model if model is not None else config['default_model_name']
+    instructions = """Vysvětli pojem tak, aby to pochopilo dítě 4. třídy základní školy.
     
     <output_template>
     fráze: [vstupní pojem]
@@ -154,10 +167,25 @@ def assistant_explain_simply_lexicon(input, model=None):
     </output_template>"""
 
     messages = [
-        {"role": "system", "content": assistant_instructions},
+        {"role": "system", "content": instructions},
         {"role": "user", "content": input}
     ]
-    response = fetch_ai(assistant_model, messages)
-    if assistant_config['verbose']:
-        print(f"\n{assistant_name}:\n{response}")
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
     return response
+
+
+# Extract all assistants dynamically
+import inspect
+ASSISTANTS = {
+    func.id: {
+      'name': func.name, 
+      'description': func.description, 
+      'function': func, 
+      'model': func.model, 
+      'category': func.category
+    }
+    for name, func in inspect.getmembers(__import__(__name__), inspect.isfunction)
+    if hasattr(func, 'id') and hasattr(func, 'is_assistant')  # Check for workflow marker
+}

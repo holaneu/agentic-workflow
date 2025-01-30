@@ -34,7 +34,14 @@ ai_models = [
   },
   {
     "name": "gemini-1.5-flash",
-    "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", #"https://generativelanguage.googleapis.com/v1beta/models",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", 
+    "api_key": os.getenv('GEMINI_API_KEY'),
+    "api_type": "openai", #gemini
+    "provider": "google"
+  },
+  {
+    "name": "gemini-2.0-flash-exp",
+    "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
     "api_key": os.getenv('GEMINI_API_KEY'),
     "api_type": "openai", #gemini
     "provider": "google"

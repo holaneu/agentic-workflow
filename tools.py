@@ -25,8 +25,7 @@ def fetch_ai(model, input):
     return None
   if model['api_type'] == 'openai':
     return call_api_of_type_openai_v2(model, input)
-  if model['api_type'] == 'gemini':
-    return call_api_of_type_gemini_v1(model, input)
+    #return call_api_of_type_openai_official(model, input)
   if model['api_type'] == 'anthropic':
     return call_api_of_type_anthropic(model, input)
   return None
@@ -40,7 +39,43 @@ def call_api_of_type_openai_official(model, input):
       model=model['name'],
       messages=format_input_as_messages(input)
     )
-    return completion.choices[0].message.content
+    log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_filepath = f"logs/ai_response_{log_timestamp}.log"    
+    # Convert completion object to dictionary for JSON serialization
+    completion_dict = {
+      "model": completion.model,
+      "choices": [{
+        "message": {
+          "content": completion.choices[0].message.content,
+          "role": completion.choices[0].message.role
+        }
+      }],
+      "usage": {
+        "prompt_tokens": completion.usage.prompt_tokens,
+        "completion_tokens": completion.usage.completion_tokens,
+        "total_tokens": completion.usage.total_tokens
+      }
+    }    
+    log_content = {
+      "input": format_input_as_messages(input),
+      "output": completion_dict
+    }
+    log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
+    save_to_file(content=log_content, filepath=log_filepath)
+    output = {
+        "status": "call_api_of_type_openai_official: Success",
+        "message": {
+          "content": completion.choices[0].message.content,
+          "role": completion.choices[0].message.role,
+        },        
+        "info": {
+          "model": completion.model,
+          "prompt_tokens": completion.usage.prompt_tokens,
+          "completion_tokens": completion.usage.completion_tokens,
+          "total_tokens": completion.usage.total_tokens
+        }
+      }
+    return output
   except Exception as e:
     print(f"Error calling OpenAI: {e}")
     return None
@@ -67,52 +102,29 @@ def call_api_of_type_openai_v2(model, input):
     response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
     if response.status_code == 200:
       result = response.json()
-      print(result)
       log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
       log_filepath = f"logs/ai_response_{log_timestamp}.log"
-      log_content = json.dumps(result, ensure_ascii=False, indent=2)
+      log_content = {
+        "input": format_input_as_messages(input),
+        "output": result
+      }
+      log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
       save_to_file(content=log_content, filepath=log_filepath)
-      return result["choices"][0]["message"]["content"]
-    else:
-      print(f"Error: {response.status_code}")
-      print(response.text)
-      return None
-  except Exception as e:
-    print(f"Error calling model: {e}")
-    return None
-
-
-def call_api_of_type_gemini_v1(model, input):
-  model_data = get_model(model['name'])
-  if model_data is None:
-    print("no model data")
-    return None
-
-  messages = format_input_as_messages(input)
-  # Concatenate content from all messages
-  prompt_text = "\n".join([msg['content'] for msg in messages])
-  
-  base_url = f"{model_data['base_url']}/{model_data['name']}:generateContent"
-  
-  headers = {
-    "Content-Type": "application/json"
-  }
-
-  payload = {
-    "contents": [{
-      "parts": [{"text": prompt_text}]
-    }]
-  }
-
-  params = {
-    "key": model_data['api_key']
-  }
-
-  try:
-    response = requests.post(base_url, headers=headers, params=params, data=json.dumps(payload))
-    if response.status_code == 200:
-      result = response.json()
-      return result["candidates"][0]["content"]["parts"][0]["text"]
+      output = {
+        "status": "call_api_of_type_openai_v2: Success",
+        "message": {
+          "content": result["choices"][0]["message"]["content"],
+          "role": result["choices"][0]["message"]["role"]
+        },        
+        "info": {
+          "model": result["model"],
+          "prompt_tokens": result["usage"]["prompt_tokens"],
+          "completion_tokens": result["usage"]["completion_tokens"],
+          "total_tokens": result["usage"]["total_tokens"]
+        }
+      }
+      #return result["choices"][0]["message"]["content"]
+      return output
     else:
       print(f"Error: {response.status_code}")
       print(response.text)
