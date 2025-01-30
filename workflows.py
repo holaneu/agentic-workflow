@@ -1,18 +1,20 @@
 from assistants import *
 from tools import save_to_file
 
-def workflow(id, name, description):
+def workflow(**kwargs):
     """Decorator to define workflow functions with metadata."""
     def decorator(func):
-        func.id = id
-        func.name = name
-        func.description = description
+        func.id = func.__name__  # Automatically set id to the function name
+        func.name = kwargs.get('name', func.__name__.replace('workflow_', '').replace('_', ' '))  # Use function name as default name
+        func.description = kwargs.get('description', func.__doc__)  # Use function docstring if no description
+        func.category = kwargs.get('category', None)  # Assign None if category is not provided
         return func
     return decorator
 
 
-@workflow(id='translation_out_yaml', name='Translation CS-EN (YAML)', description='Translates text between Czech and English in YAML format')
+@workflow(name='Translation CS-EN (YAML)')
 def workflow_translation_out_yaml(input, model):
+    """Translates text between Czech and English in YAML format."""
     if input is None:
         return None 
     translation = assistant_translator_cs_en_yaml(input=input, assistant_model=model)
@@ -22,8 +24,9 @@ def workflow_translation_out_yaml(input, model):
     return translation
 
 
-@workflow(id='summarize', name='Text Summarization', description='Summarizes input text')
-def workflow_summarization(input, model):
+@workflow()
+def workflow_text_summarization(input, model):
+    """Summarizes input text."""
     if input is None:
         return None 
     summarization = assistant_summarize_text(input=input, model=model)
@@ -33,8 +36,9 @@ def workflow_summarization(input, model):
     return summarization
 
 
-@workflow(id='analyze_situation', name='Analyze situation', description='Analyzes a given situation and provides insights')
+@workflow()
 def workflow_situation_analysis(input, model):
+    """Analyzes a given situation and provides insights."""
     if input is None:
         return None 
     analysis = assistant_analyze_situation(input=input, model=model)
@@ -44,8 +48,9 @@ def workflow_situation_analysis(input, model):
     return analysis
 
 
-@workflow(id='summarize_video_transcription', name='Summarize Video Transcription', description='Summarizes the transcript of a video')
-def workflow_video_transcription_summarization(input, model):
+@workflow()
+def workflow_video_transcript_summarization(input, model):
+    """Summarizes the transcript of a video."""
     if input is None:
         return None 
     summarization = assistant_summarize_video_transcription(input=input, model=model)
@@ -55,8 +60,9 @@ def workflow_video_transcription_summarization(input, model):
     return summarization
 
 
-@workflow(id='explain_simply_lexicon', name='Explain Simply (Lexicon)', description='Provides simple explanations, synonyms, and examples')
+@workflow()
 def workflow_explain_simply_lexicon(input, model):
+    """Provides simple explanations, synonyms, and examples for a given phrase."""
     if input is None:
         return None 
     lexicon = assistant_explain_simply_lexicon(input=input, model=model)
