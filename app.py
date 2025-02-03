@@ -27,5 +27,10 @@ if __name__ == "__main__":
 
   #print(fetch_ai(model="gemini-2.0-flash-exp", input="kedlubna"))
 
-  print(fetch_ai(model="gpt-4o-mini", input="kedlubna"))
+  #print(fetch_ai(model="gpt-4o-mini", input="kedlubna"))
+  
+  print("ASSISTANTS")
+  print(ASSISTANTS)
 
+  print("WORKFLOWS")
+  print(WORKFLOWS)

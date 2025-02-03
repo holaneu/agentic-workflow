@@ -6,20 +6,63 @@ import datetime
 from configs import *
 
 
+def tools(**kwargs):
+    """Decorator to define tool functions with metadata."""
+    def decorator(func):
+        func.id = func.__name__  # Automatically set id to the function name
+        func.name = kwargs.get('name', func.__name__.replace('', '').replace('_', ' '))  # Use function name as default name
+        func.description = kwargs.get('description', func.__doc__)  # Use function docstring if no description
+        func.category = kwargs.get('category', None)  # Assign None if category is not provided
+        func.is_tool = True
+        return func
+    return decorator
+
+@tools()
 def get_model(model_name):
+  """
+  Retrieves an AI model configuration from a list of available models by its name.
+
+  Args:
+    model_name (str): The name of the AI model to search for.
+
+  Returns:
+    dict or None: The model configuration dictionary if found, None otherwise. 
+    The model dictionary contains model parameters and settings.
+  """
   for model in ai_models:
     if model['name'] == model_name:
       return model
   return None
 
 
+@tools()
 def format_input_as_messages(input):
     if isinstance(input, str):
         return [{"role": "user", "content": input}]
     return input
 
 
+@tools()
 def fetch_ai(model, input):
+  """
+  Fetches AI response using specified model and input.
+
+  This function processes the input through different AI models based on their API type.
+  Currently supports OpenAI and Anthropic API types.
+
+  Args:
+    model (str or dict): The AI model identifier or configuration dictionary
+    input (str): The input text/prompt to be processed by the AI model
+
+  Returns:
+    str or None: The AI model's response if successful, None if the model is not found
+    or if the API type is not supported
+
+  Example:
+    >>> response = fetch_ai("gpt-4", "What is the capital of France?")
+    >>> print(response)
+    "The capital of France is Paris."
+  """
   model = get_model(model)
   if model is None:
     return None
@@ -31,6 +74,7 @@ def fetch_ai(model, input):
   return None
 
 
+@tools()
 def call_api_of_type_openai_official(model, input):
   from openai import OpenAI
   client = OpenAI()
@@ -81,7 +125,34 @@ def call_api_of_type_openai_official(model, input):
     return None
 
 
+@tools()
 def call_api_of_type_openai_v2(model, input):
+  """
+  Calls OpenAI API v2 with the given model and input.
+  This function sends a request to OpenAI's API, handles the response, logs the interaction,
+  and returns the processed result.
+  Args:
+    model (dict): Dictionary containing model information including 'name'
+    input (str/dict): Input text or formatted input to be sent to the API
+  Returns:
+    dict: A dictionary containing:
+      - status (str): Status message
+      - message (dict): 
+        - content (str): The generated content
+        - role (str): Role of the message
+      - info (dict):
+        - model (str): Model name used
+        - prompt_tokens (int): Number of tokens in prompt
+        - completion_tokens (int): Number of tokens in completion
+        - total_tokens (int): Total tokens used
+    None: If the API call fails or encounters an error
+  Raises:
+    Exception: If there's an error during the API call
+  Note:
+    - Requires valid model data with api_key and base_url
+    - Logs all interactions in 'logs' directory with timestamp
+    - Uses temperature of 0.7 for generation
+  """
   model_data = get_model(model['name'])
   if model_data is None:
     print("no model data")
@@ -134,6 +205,7 @@ def call_api_of_type_openai_v2(model, input):
     return None
 
 
+@tools()
 def call_api_of_type_anthropic(model, messages):
   model_data = get_model(model['name'])
   if model_data is None:
@@ -168,6 +240,7 @@ def call_api_of_type_anthropic(model, messages):
     return None
 
 
+@tools()
 def open_file(filepath):
   with open(filepath, 'r', encoding='utf-8') as infile:
       return infile.read()
@@ -220,12 +293,28 @@ def save_to_file(filepath, content, prepend=False):
     raise
 
 
+@tools()
 def save_to_json_file(data, output_file):
   with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+@tools()
 def split_and_strip(content):
   parts = re.split(r'-{5,}', content.strip())
   stripped_parts = [part.strip() for part in parts]
   return stripped_parts
+
+
+# Extract all tools dynamically
+import inspect
+TOOLS = {
+    func.id: {
+      'name': func.name, 
+      'description': func.description, 
+      'function': func, 
+      'category': func.category
+    }
+    for name, func in inspect.getmembers(__import__(__name__), inspect.isfunction)
+    if hasattr(func, 'id') and hasattr(func, 'is_tool')  # Check for workflow marker
+}
