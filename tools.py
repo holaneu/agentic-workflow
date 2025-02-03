@@ -6,7 +6,7 @@ import datetime
 from configs import *
 
 
-def tools(**kwargs):
+def tool(**kwargs):
     """Decorator to define tool functions with metadata."""
     def decorator(func):
         func.id = func.__name__  # Automatically set id to the function name
@@ -17,7 +17,8 @@ def tools(**kwargs):
         return func
     return decorator
 
-@tools()
+
+@tool()
 def get_model(model_name):
   """
   Retrieves an AI model configuration from a list of available models by its name.
@@ -35,14 +36,14 @@ def get_model(model_name):
   return None
 
 
-@tools()
+@tool()
 def format_input_as_messages(input):
     if isinstance(input, str):
         return [{"role": "user", "content": input}]
     return input
 
 
-@tools()
+@tool()
 def fetch_ai(model, input):
   """
   Fetches AI response using specified model and input.
@@ -74,7 +75,7 @@ def fetch_ai(model, input):
   return None
 
 
-@tools()
+@tool()
 def call_api_of_type_openai_official(model, input):
   from openai import OpenAI
   client = OpenAI()
@@ -125,7 +126,7 @@ def call_api_of_type_openai_official(model, input):
     return None
 
 
-@tools()
+@tool()
 def call_api_of_type_openai_v2(model, input):
   """
   Calls OpenAI API v2 with the given model and input.
@@ -205,7 +206,7 @@ def call_api_of_type_openai_v2(model, input):
     return None
 
 
-@tools()
+@tool()
 def call_api_of_type_anthropic(model, messages):
   model_data = get_model(model['name'])
   if model_data is None:
@@ -240,7 +241,7 @@ def call_api_of_type_anthropic(model, messages):
     return None
 
 
-@tools()
+@tool()
 def open_file(filepath):
   with open(filepath, 'r', encoding='utf-8') as infile:
       return infile.read()
@@ -293,17 +294,36 @@ def save_to_file(filepath, content, prepend=False):
     raise
 
 
-@tools()
+@tool()
 def save_to_json_file(data, output_file):
   with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-@tools()
+@tool()
 def split_and_strip(content):
   parts = re.split(r'-{5,}', content.strip())
   stripped_parts = [part.strip() for part in parts]
   return stripped_parts
+
+
+def search_web_brave(query):
+  pass
+
+def search_web_google(query):
+  pass
+
+def commit_to_github():
+  pass
+
+def fetch_from_github():
+  pass
+
+def download_content_from_url():
+  pass
+
+def download_youtube_video_transcript():
+  pass
 
 
 # Extract all tools dynamically

@@ -14,16 +14,27 @@ def workflow(**kwargs):
     return decorator
 
 
-@workflow(name='Translation CS-EN (YAML)')
-def workflow_translation_out_yaml(input, model=None):
+@workflow()
+def workflow_translation_cs_en_yaml(input, model=None):
     """Translates text between Czech and English in YAML format."""
     if input is None:
         return None 
     translation = assistant_translator_cs_en_yaml(input=input, model=model)
     if translation:
-        #translation = translation.strip()
         translation = translation["message"]["content"].strip()
         save_to_file("test/slovnicek.txt", translation + "\n\n-----\n", prepend=True)
+    return translation
+
+
+@workflow()
+def workflow_translation_cs_en(input, model=None):
+    """Translates text between Czech and English."""
+    if input is None:
+        return None 
+    translation = assistant_translator_cs_en(input=input, model=model)
+    if translation:
+        translation = translation["message"]["content"].strip()
+        save_to_file("test/translations.txt", translation + "\n\n-----\n", prepend=True)
     return translation
 
 
@@ -73,6 +84,27 @@ def workflow_explain_simply_lexicon(input, model=None):
         lexicon = lexicon["message"]["content"].strip()
         save_to_file("test/lexicon.txt", lexicon + "\n\n-----\n", prepend=True)
     return lexicon
+
+
+@workflow()
+def workflow_create_assistatnt_prompt(input, model=None):
+    """Creates a new assistant based on the input."""
+    if input is None:
+        return None 
+    assistant = assistant_assistant_instructions_creator(input=input, model=model)
+    if assistant:
+        assistant = assistant["message"]["content"].strip()
+        save_to_file("test/assistants.txt", assistant + "\n\n-----\n", prepend=True)
+    return assistant
+
+
+@workflow()
+def workflow_take_quick_note(input, model=None):
+    """Takes a quick note and saves it to a file."""
+    if input is None:
+        return None 
+    save_to_file("test/quick_notes.md", input + "\n\n-----\n", prepend=True)
+    return input
 
 
 # Extract all workflows dynamically

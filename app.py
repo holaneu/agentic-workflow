@@ -34,3 +34,6 @@ if __name__ == "__main__":
 
   print("WORKFLOWS")
   print(WORKFLOWS)
+
+  print("TOOLS")
+  print(TOOLS)
