@@ -1,0 +1,120 @@
+```
+- 
+  id: call_api_of_type_anthropic
+  name: call api of type anthropic
+  description: null
+
+- 
+  id: call_api_of_type_openai_official
+  name: call api of type openai official
+  description: null
+
+- 
+  id: call_api_of_type_openai_v2
+  name: call api of type openai v2
+  description: |
+    Calls OpenAI API v2 with the given model and input.
+    This function sends a request to OpenAI's API, handles the response, logs the interaction,
+    and returns the processed result.
+
+    Args:
+      model (dict): Dictionary containing model information including 'name'
+      input (str/dict): Input text or formatted input to be sent to the API
+
+    Returns:
+      dict: A dictionary containing:
+        - status (str): Status message
+        - message (dict): 
+            - content (str): The generated content
+            - role (str): Role of the message
+        - info (dict):
+            - model (str): Model name used
+            - prompt_tokens (int): Number of tokens in prompt
+            - completion_tokens (int): Number of tokens in completion
+            - total_tokens (int): Total tokens used
+
+      None: If the API call fails or encounters an error
+
+    Raises:
+      Exception: If there's an error during the API call
+
+    Note:
+      - Requires valid model data with api_key and base_url
+      - Logs all interactions in 'logs' directory with timestamp
+      - Uses temperature of 0.7 for generation
+
+- 
+  id: fetch_ai
+  name: fetch ai
+  description: |
+    Fetches AI response using specified model and input.
+
+    This function processes the input through different AI models based on their API type.
+    Currently supports OpenAI and Anthropic API types.
+
+    Args:
+      model (str or dict): The AI model identifier or configuration dictionary
+      input (str): The input text/prompt to be processed by the AI model
+
+    Returns:
+      str or None: The AI model's response if successful, None if the model is not found
+      or if the API type is not supported
+
+    Example:
+      >>> response = fetch_ai("gpt-4", "What is the capital of France?")
+      >>> print(response)
+      "The capital of France is Paris."
+
+- 
+  id: format_input_as_messages
+  name: format input as messages
+  description: null
+
+- 
+  id: get_model
+  name: get model
+  description: |
+    Retrieves an AI model configuration from a list of available models by its name.
+
+    Args:
+      model_name (str): The name of the AI model to search for.
+
+    Returns:
+      dict or None: The model configuration dictionary if found, None otherwise. 
+      The model dictionary contains model parameters and settings.
+
+- 
+  id: open_file
+  name: open file
+  description: |
+    Opens and reads a text file, returning its contents as a string.
+
+    Args:
+      filepath (str): The path to the file to be opened and read.
+
+    Returns:
+      str: The complete contents of the file as a string.
+
+    Raises:
+      FileNotFoundError: If the specified file does not exist.
+      IOError: If there is an error reading the file.
+
+- 
+  id: save_to_json_file
+  name: save to json file
+  description: |
+    Saves data to a JSON file with UTF-8 encoding.
+
+    Args:
+      data: The data to be saved to the JSON file. Can be any JSON-serializable object.
+      output_file (str): The path to the output JSON file.
+
+    Example:
+      data = {"name": "John", "age": 30}
+      save_to_json_file(data, "output.json")
+
+- 
+  id: split_and_strip
+  name: split and strip
+  description: null
+```

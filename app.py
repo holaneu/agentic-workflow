@@ -36,4 +36,8 @@ if __name__ == "__main__":
   print(WORKFLOWS)
 
   print("TOOLS")
-  print(TOOLS)
+  tools_without_functions = {
+    name: {k: v for k, v in tool.items() if k != 'function'}
+    for name, tool in TOOLS.items()
+  }
+  print(json.dumps(tools_without_functions, indent=2))

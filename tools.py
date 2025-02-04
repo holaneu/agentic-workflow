@@ -243,11 +243,42 @@ def call_api_of_type_anthropic(model, messages):
 
 @tool()
 def open_file(filepath):
+  """
+  Opens and reads a text file, returning its contents as a string.
+  Args:
+    filepath (str): The path to the file to be opened and read.
+  Returns:
+    str: The complete contents of the file as a string.
+  Raises:
+    FileNotFoundError: If the specified file does not exist.
+    IOError: If there is an error reading the file.
+  """
   with open(filepath, 'r', encoding='utf-8') as infile:
       return infile.read()
 
 
 def save_to_file(filepath, content, prepend=False):
+  """Saves content to a file with various safety checks and options.
+  This function saves the provided content to a file, with options to prepend or append. 
+  It includes several safety checks for content validity and file path security.
+  Args:
+    filepath (str): Relative path where the file should be saved. Path traversal is not allowed.
+    content (str or convertible to str): Content to write to the file. Cannot be empty.
+    prepend (bool, optional): If True, adds content at the beginning of file. If False, appends to end. 
+      Defaults to False.
+  Raises:
+    ValueError: If content is empty, not convertible to string, contains invalid Unicode,
+      exceeds 10MB, or if filepath attempts path traversal.
+    IOError: If there are issues with file operations.
+    OSError: If there are system-level errors during file operations.
+  Notes:
+    - Creates directories in the path if they don't exist
+    - Adds newline after content
+    - Files are written using UTF-8 encoding
+    - Maximum file size limit is 10MB
+    - Paths are relative to APP_SETTINGS["output_folder"]
+  """
+
   try:
     if content is None:
       raise ValueError("Content cannot be empty")
@@ -296,6 +327,15 @@ def save_to_file(filepath, content, prepend=False):
 
 @tool()
 def save_to_json_file(data, output_file):
+  """Saves data to a JSON file with UTF-8 encoding.
+  Args:
+    data: The data to be saved to the JSON file. Can be any JSON-serializable object.
+    output_file (str): The path to the output JSON file.
+  Example:
+    data = {"name": "John", "age": 30}
+    save_to_json_file(data, "output.json")
+  """
+
   with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
@@ -306,7 +346,7 @@ def split_and_strip(content):
   stripped_parts = [part.strip() for part in parts]
   return stripped_parts
 
-
+# TODO: Implement the following tools
 def search_web_brave(query):
   pass
 
@@ -323,6 +363,18 @@ def download_content_from_url():
   pass
 
 def download_youtube_video_transcript():
+  pass
+
+def download_youtube_video():
+  pass
+
+def convert_markdown_to_html():
+  pass
+
+def convert_html_to_markdown():
+  pass
+
+def save_as_printable_html():
   pass
 
 
