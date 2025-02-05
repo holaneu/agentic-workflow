@@ -295,6 +295,34 @@ def assistant_generate_short_story(input, model=None):
     return response
 
 
+@assistant()
+def assistant_analyze_text(input, model=None):
+    """Analyzes text and provides general characteristics like style, theme, tone, length, and expertise level."""
+    config = {
+        "default_model_name": "gpt-4o",
+        "verbose": True
+    }
+    model = model if model is not None else config['default_model_name']
+    instructions = """Analyzuj text a napiš jeho obecnou charakteristiku (styl, téma, délka, tón, míra odbornosti) v odrážkách.
+
+    <output_template>
+    téma:
+    styl:
+    tón:
+    délka:
+    míra odbornosti: <číslené skóre odbornosti v daném tématu od 1 do 10, kde 10 je nejvíce odborné>
+    </output_template>"""
+
+    messages = [
+        {"role": "system", "content": instructions},
+        {"role": "user", "content": input}
+    ]
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
+    return response
+
+
 # Extract all assistants dynamically
 import inspect
 ASSISTANTS = {
