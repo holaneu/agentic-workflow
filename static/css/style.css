@@ -7,6 +7,9 @@
   --accent-hover: #7c83ff;
 }
 
+html * {  
+  box-sizing: border-box;
+}
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
@@ -26,6 +29,7 @@ h1 {
   font-size: 2.5rem;
   margin-bottom: 2rem;
   font-weight: 600;
+  text-align: center;
 }
 
 textarea {
@@ -47,10 +51,29 @@ textarea:focus {
   border-color: var(--accent);
 }
 
+.control-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  /*padding: 1rem;*/
+  /*background-color: var(--bg-secondary);*/
+  border-radius: 8px;
+}
+
+.control-section select {
+  margin-bottom: 0;
+  min-width: 250px;
+}
+
+.control-section button {
+  white-space: nowrap;
+}
+
 select {
-  width: 100%;
+  width: 60%;
   padding: 0.75rem;
-  margin-bottom: 1.5rem;
   background-color: var(--bg-secondary);
   border: 1px solid #404040;
   border-radius: 8px;
@@ -80,6 +103,22 @@ button:hover {
   padding: 1rem;
   border-radius: 8px;
   background-color: var(--bg-secondary);
+  display: none;  /* Hide by default */
+}
+
+/* Show result only when status OR response has content */
+#result:has(.status:not(:empty)),
+#result:has(.response:not(:empty)) {
+  display: block;
+}
+
+/* Hide result when both status and response are empty */
+#result .status:empty + .response:empty {
+  display: none;
+}
+
+#result .status:empty + .response:empty ~ #result {
+  display: none;
 }
 
 .error {

@@ -9,14 +9,25 @@
     <h1>Workflows</h1>    
     <textarea id="input" placeholder="Enter your text input here ..."></textarea>
     
-    <select id="workflow">
-      <option value="" disabled selected>Please select workflow</option>
-      {% for id, workflow in workflows.items() %}
-      <option value="{{ id }}">{{ workflow.name }}</option>
-      {% endfor %}
-    </select>
-    
-    <button onclick="processText()">Start workflow</button>
+    <section class="control-section">
+      <select id="workflow">
+        <option value="" disabled selected>Select workflow ...</option>
+        {% for id, workflow in workflows.items() %}
+        <option value="{{ id }}">{{ workflow.name }}</option>
+        {% endfor %}
+      </select>
+      <button onclick="processWorkflow()">Run workflow</button>
+    </section>
+
+    <section class="control-section">
+      <select id="assistant">
+        <option value="" disabled selected>Select assistant ...</option>
+        {% for id, assistant in assistants.items() %}
+        <option value="{{ id }}">{{ assistant.name }}</option>
+        {% endfor %}
+      </select>    
+      <button onclick="processAssistant()">Run assistant</button>
+    </section>
     
     <div id="result">
       <div class="status"></div>
@@ -29,7 +40,9 @@
       labels: {
         empty_input_error: "<span class='error'>Please enter some text to process</span>",
         workflow_success: "<span class='success'>✓ Workflow completed successfully</span>",
-        select_workflow_error: "<span class='error'>Please select a workflow</span>"
+        select_workflow_error: "<span class='error'>Please select a workflow</span>",
+        select_assistant_error: "<span class='error'>Please select an assistant</span>",
+        assistant_success: "<span class='success'>✓ Assistant completed successfully</span>"
       },
     };  
     
@@ -40,7 +53,7 @@
       return `<div class="response-data">${response}</div>`;
     }
 
-    async function processText() {      
+    async function processWorkflow() {      
       const inputText = document.getElementById('input');
       const workflowSelection = document.getElementById('workflow');
       const resultDiv = document.getElementById('result');
@@ -61,6 +74,52 @@
         statusDiv.innerHTML = uiConfigs.labels.select_workflow_error;
         return;
       }
+
+      try {
+        const response = await fetch('/process', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            input: inputText.value, 
+            workflow: workflowSelection.value,
+            type: 'workflow'
+          })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+          statusDiv.innerHTML = uiConfigs.labels.workflow_success;
+          responseDiv.innerHTML = formatResponse(data.response);
+          workflowSelection.value = "";
+        } else {
+          statusDiv.innerHTML = `<span class='error'>Error: ${data.error}</span>`;
+        }
+      } catch (e) {
+        statusDiv.innerHTML = `<span class='error'>Error: ${e.message}</span>`;
+      }
+    }
+
+    async function processAssistant() {      
+      const inputText = document.getElementById('input');
+      const assistantSelection = document.getElementById('assistant');
+      const resultDiv = document.getElementById('result');
+      const statusDiv = resultDiv.querySelector('.status');
+      const responseDiv = resultDiv.querySelector('.response');
+      
+      statusDiv.innerHTML = '';
+      responseDiv.innerHTML = '';
+      
+      if (!inputText.value.trim()) {
+        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
+        return;
+      }
+
+      if (!assistantSelection.value) {
+        statusDiv.innerHTML = uiConfigs.labels.select_assistant_error;
+        return;
+      }
       
       try {
         const response = await fetch('/process', {
@@ -70,15 +129,16 @@
           },
           body: JSON.stringify({ 
             input: inputText.value, 
-            workflow: workflowSelection.value 
+            assistant: assistantSelection.value,
+            type: 'assistant'
           })
         });
         
         const data = await response.json();
         if (response.ok) {
-          statusDiv.innerHTML = uiConfigs.labels.workflow_success;
+          statusDiv.innerHTML = uiConfigs.labels.assistant_success;
           responseDiv.innerHTML = formatResponse(data.response);
-          workflowSelection.value = "";
+          assistantSelection.value = "";
         } else {
           statusDiv.innerHTML = `<span class='error'>Error: ${data.error}</span>`;
         }
