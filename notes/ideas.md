@@ -1,3 +1,19 @@
+asistenti:
+- analyzuj tento clanek a napis jeho zobecnenou (obecnou) charakteristiku. Cil je v nekolika bodech popsat styl, tema, delku, ton clanku.
+  - priklad vystupu:
+    - tema:
+    - styl:
+    - ton:
+    - delka:
+    - mira odbornosti: <cislene skore odbornosti od 1 do 10 kde 10 je nejvice odborne>
+- synonyma
+- na zklade zdroje napis X otazek, ktere se ptaji na podstatne informace uvedene ve zdroji. 
+  - Priklad zdroje: V ceske republice je hodne rek. Nejdelsi reka CR je Vltava. Nejvyznamenjsi pritoky reky Vltavy jsou Berounka a Sazava. Vltava se vleva do reky Labe ve meste Melnik.
+  - Priklady otazek: Jake je nejdelsi reka v CR? Jake jsou nejvyznamnejsi pritoky Vltaby? Do jake reky se vleva Vltava? Ve kterm meste se nachazi soutok Vltavy a Labe?
+
+Pridat "Run tool" nebo "Run assistant" - zjednoduseni - nemusim vytvaret workflow pro testovani toolu nebo asistenta, zaroven se to muze hodit, kdyz chci rychle ziskat nejaky vystup bez aplikace komplexnejsiho workflow.
+
+UI - Pod nebo k sekci vystupu pridat tlacitko "Use as an input"
 
 UI - file attachments (documents, text files, images, sound files?)
 

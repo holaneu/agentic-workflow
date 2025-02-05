@@ -103,7 +103,7 @@ def workflow_take_quick_note(input, model=None):
     """Takes a quick note and saves it to a file."""
     if input is None:
         return None 
-    save_to_file("test/quick_notes.md", input + "\n\n-----\n", prepend=True)
+    save_to_file("test/quick_notes.md", input.strip() + "\n\n-----\n", prepend=True)
     return input
 
 

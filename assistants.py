@@ -246,6 +246,55 @@ def assistant_assistant_instructions_creator(input, model=None):
     return response
 
 
+@assistant()
+def assistant_generate_poem(input, model=None):
+    """Generates a poem based on the input theme."""
+    config = {
+        "default_model_name": "gpt-4o",
+        "verbose": True
+    }
+    model = model if model is not None else config['default_model_name']
+    instructions = """Create a poem based on the theme provided by the user. The poem should be original, creative, and evoke emotions related to the theme. 
+    Use descriptive language, metaphors, and imagery to convey the essence of the theme effectively. 
+    The poem should be structured with a coherent flow and rhythm that enhances the overall impact of the piece."""
+
+    messages = [
+        {"role": "system", "content": instructions},
+        {"role": "user", "content": input}
+    ]
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
+    return response
+
+
+@assistant()
+def assistant_generate_short_story(input, model=None):
+    """Generates a short story based on the input theme."""
+    config = {
+        "default_model": "gpt-4o",
+        "verbose": True
+    }
+    model = model if model is not None else config['default_model']
+    instructions = """Create a short story based on the provided theme. The story should be engaging, well-structured, and include:
+    - A clear beginning, middle, and end
+    - Vivid characters and setting descriptions
+    - Meaningful dialogue where appropriate
+    - A central conflict or challenge
+    - A satisfying resolution
+    Keep the narrative concise while maintaining emotional impact and thematic relevance.
+    """
+
+    messages = [
+        {"role": "system", "content": instructions},
+        {"role": "user", "content": input}
+    ]
+    response = fetch_ai(model, messages)
+    if config['verbose']:
+        print(f"\n{__name__}:\n{response}\n")
+    return response
+
+
 # Extract all assistants dynamically
 import inspect
 ASSISTANTS = {

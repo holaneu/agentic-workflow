@@ -1,6 +1,6 @@
 # My definitions
 
-## Own ai output data structure
+## AI output data structure
 
 output = {
   "status": "call_api_of_type_openai_official: Success",
