@@ -278,7 +278,6 @@ def save_to_file(filepath, content, prepend=False):
     - Maximum file size limit is 10MB
     - Paths are relative to APP_SETTINGS["output_folder"]
   """
-
   try:
     if content is None:
       raise ValueError("Content cannot be empty")
@@ -335,16 +334,30 @@ def save_to_json_file(data, output_file):
     data = {"name": "John", "age": 30}
     save_to_json_file(data, "output.json")
   """
-
   with open(output_file, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 @tool()
 def split_and_strip(content):
+  """
+  Splits a string by a delimiter of 5 or more hyphens and strips whitespace from each part.
+  Args:
+    content (str): The input string to be split and stripped.
+  Returns:
+    list[str]: A list of strings where:
+      - Each string is a part of the original content split by 5 or more hyphens
+      - Leading and trailing whitespace is removed from each part
+      - Empty strings are preserved
+  Example:
+    >>> text = "Hello\\n-----\\nWorld"
+    >>> split_and_strip(text)
+    ['Hello', 'World']
+  """
   parts = re.split(r'-{5,}', content.strip())
   stripped_parts = [part.strip() for part in parts]
   return stripped_parts
+
 
 # TODO: Implement the following tools
 def search_web_brave(query):
