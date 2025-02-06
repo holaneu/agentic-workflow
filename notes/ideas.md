@@ -1,3 +1,9 @@
+- synonyma
+- na zklade zdroje napis X otazek, ktere se ptaji na podstatne informace uvedene ve zdroji. 
+  - Priklad zdroje: V ceske republice je hodne rek. Nejdelsi reka CR je Vltava. Nejvyznamenjsi pritoky reky Vltavy jsou Berounka a Sazava. Vltava se vleva do reky Labe ve meste Melnik.
+  - Priklady otazek: Jake je nejdelsi reka v CR? Jake jsou nejvyznamnejsi pritoky Vltaby? Do jake reky se vleva Vltava? Ve kterm meste se nachazi soutok Vltavy a Labe?
+
+UI - Pod nebo k sekci vystupu pridat tlacitko "Use as an input"
 
 UI - file attachments (documents, text files, images, sound files?)
 
@@ -7,13 +13,11 @@ integrate openai whisper api
 
 integrate github repo commit/push
 
-integrate eleven labs api
+integrate elevenLabs api
 
 render markdown within UI, in "response section"
 
 vlastni dat. struktura (pro konverzace, workflows, assistanty atd.), prenos dat/zprav mezi funkcemi (input/output), cast z toho pouzitelne pro logovani, zpetne pujde (ulozene do souboru) prochazet a filtrovat, vyhledavat, analyzovat.
-
-show reponse in the UI (pass response retrieved within app.py workflow to the server - index.html)
 
 logging of workflows
   - own json data structure for workflow
