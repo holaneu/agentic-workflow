@@ -1,7 +1,25 @@
-- synonyma
-- na zklade zdroje napis X otazek, ktere se ptaji na podstatne informace uvedene ve zdroji. 
-  - Priklad zdroje: V ceske republice je hodne rek. Nejdelsi reka CR je Vltava. Nejvyznamenjsi pritoky reky Vltavy jsou Berounka a Sazava. Vltava se vleva do reky Labe ve meste Melnik.
-  - Priklady otazek: Jake je nejdelsi reka v CR? Jake jsou nejvyznamnejsi pritoky Vltaby? Do jake reky se vleva Vltava? Ve kterm meste se nachazi soutok Vltavy a Labe?
+
+convert yaml to json
+
+generate date in format YYYY-MM-DD
+
+generate id
+
+analyze text - extract action steps
+
+run sellenium py code
+
+generate standalone self-contained SPA web page (similar to Claude's artifact)
+
+comment on topic
+
+analyze text - semantic analysis
+
+generate py code
+
+execute py code
+
+synonyma
 
 UI - Pod nebo k sekci vystupu pridat tlacitko "Use as an input"
 
@@ -39,7 +57,9 @@ workflow: story_writing
   final output
 
 
-get text content from url
+get / parse readable text content from HTML
+
+get HTML from URL
 
 classify input
 

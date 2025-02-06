@@ -7,25 +7,23 @@ from configs import *
 
 
 def tool(**kwargs):
-    """Decorator to define tool functions with metadata."""
-    def decorator(func):
-        func.id = func.__name__  # Automatically set id to the function name
-        func.name = kwargs.get('name', func.__name__.replace('', '').replace('_', ' '))  # Use function name as default name
-        func.description = kwargs.get('description', func.__doc__)  # Use function docstring if no description
-        func.category = kwargs.get('category', None)  # Assign None if category is not provided
-        func.is_tool = True
-        return func
-    return decorator
+  """Decorator to define tool functions with metadata."""
+  def decorator(func):
+      func.id = func.__name__  # Automatically set id to the function name
+      func.name = kwargs.get('name', func.__name__.replace('', '').replace('_', ' '))  # Use function name as default name
+      func.description = kwargs.get('description', func.__doc__)  # Use function docstring if no description
+      func.category = kwargs.get('category', None)  # Assign None if category is not provided
+      func.is_tool = True
+      return func
+  return decorator
 
 
 @tool()
 def get_model(model_name):
   """
   Retrieves an AI model configuration from a list of available models by its name.
-
   Args:
     model_name (str): The name of the AI model to search for.
-
   Returns:
     dict or None: The model configuration dictionary if found, None otherwise. 
     The model dictionary contains model parameters and settings.
@@ -47,18 +45,14 @@ def format_input_as_messages(input):
 def fetch_ai(model, input):
   """
   Fetches AI response using specified model and input.
-
   This function processes the input through different AI models based on their API type.
   Currently supports OpenAI and Anthropic API types.
-
   Args:
     model (str or dict): The AI model identifier or configuration dictionary
     input (str): The input text/prompt to be processed by the AI model
-
   Returns:
     str or None: The AI model's response if successful, None if the model is not found
     or if the API type is not supported
-
   Example:
     >>> response = fetch_ai("gpt-4", "What is the capital of France?")
     >>> print(response)
@@ -359,8 +353,31 @@ def split_and_strip(content):
   return stripped_parts
 
 
+@tool()
+def generate_id(length=10):    
+  """
+  Generate a random ID string of specified length using letters and numbers.  
+  Args:
+    length (int): Length of ID to generate, defaults to 10    
+  Returns:
+    str: Random string of specified length containing letters and digits    
+  Example:
+    >>> generate_id()
+    'bK9mP4xL2n'
+    >>> generate_id(5)
+    'Yw3kP'
+  """
+  import random
+  import string
+  chars = string.ascii_letters + string.digits
+  return ''.join(random.choice(chars) for _ in range(length))
+
+
+# -----------------------------------
 # TODO: Implement the following tools
+# -----------------------------------
 def search_web_brave(query):
+  
   pass
 
 def search_web_google(query):
