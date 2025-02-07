@@ -1,5 +1,5 @@
 from assistants import *
-from tools import save_to_file
+from tools import save_to_file, save_to_external_file
 
 def workflow(**kwargs):
     """Decorator to define workflow functions with metadata."""
@@ -104,7 +104,20 @@ def workflow_take_quick_note(input, model=None):
     if input is None:
         return None 
     save_to_file("test/quick_notes.md", input.strip() + "\n\n-----\n", prepend=True)
+    save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)
     return input
+
+
+@workflow()
+def workflow_write_story(input, model=None):
+    """Generates short feel-good stories."""
+    if input is None:
+        return None 
+    story = assistant_writer(input=input, model=model)
+    if story:
+        story = story["message"]["content"].strip()
+        save_to_file("test/stories.md", story + "\n\n-----\n", prepend=True)
+    return story
 
 
 # Extract all workflows dynamically
