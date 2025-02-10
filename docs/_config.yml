@@ -8,10 +8,11 @@ theme: null
 # Optional - add author or other metadata
 author: holaneu
 
-# Optional - any plugins for additional functionality
-plugins:
-  - jekyll-feed # enables Atom/RSS feeds for your site
-  - jekyll-tagging # enables tags if needed, ensure this plugin is allowed on GitHub Pages
+# Archives
+collections:
+  archives:
+    output: true
+    permalink: /archives/:path/
 
 # Optional - social links
 social_links:
