@@ -362,7 +362,55 @@ def assistant_generate_questions(input, model=None):
     return response
 
 
-# Extract all assistants dynamically
+@assistant()
+def assistant_universal(input, model=None):
+  """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
+  config = {
+    "default_model": "gpt-4o",
+    "verbose": True
+  }
+  model = model if model is not None else config['default_model']
+  messages = [
+    {"role": "user", "content": input}
+  ]
+  response = fetch_ai(model, messages)
+  if config['verbose']:
+    print(f"\n{__name__}:\n{response}\n")
+  return response
+
+
+@assistant()
+def assistant_writer(input, model=None):
+  """Generates short feel-good stories based on simple prompts."""
+  config = {
+      "default_model": "gpt-4o",
+      "verbose": True
+  }
+  model = model if model is not None else config['default_model']
+  instructions = """
+  Jseš spisovatel krátkých povídek. Uživatel poskytne námět pro krátký příběh ve formě krátké věty, fráze nebo stručného popisu situace. Vytvoř krátký příběh, který bude splňovat tato kritéria:
+  - perspektiva: vypravěč (3. osoba)
+  - čas: minulý čas, např. "Sam se rozhodl vyrazit ven se projít."
+  - postavy: v příběhu se může vyskytovat více postav. Jedna z nich, může to být hlavní nebo vedlejší postava, by měla být muž, věk 39 let, introvert, přemýšlivý, pracuje jako prompt engineer a vývojář python aplikací, otec dvou dětí, ženatý.
+  - žánr: fikce ze současnosti (contenporary fiction)
+  - pod-žánr: feel-good
+  - tón: milý a laskavý, optimistický, s veselou atmosférou, občas humorný
+  - dialogy: použij neformální, uvolněný až hovorový tón
+  - délka: maximálně 400 slov
+  - titulek: na začátek příběhu vlož titulek "# Story: [název příběhu]"
+  """
+
+  messages = [
+      {"role": "system", "content": instructions},
+      {"role": "user", "content": input}
+  ]
+  response = fetch_ai(model, messages)
+  if config['verbose']:
+      print(f"\n{__name__}:\n{response}\n")
+  return response
+
+
+# Registry of assistants - Extract all assistants dynamically
 import inspect
 ASSISTANTS = {
     func.id: {

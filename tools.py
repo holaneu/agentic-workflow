@@ -4,6 +4,7 @@ import json
 import re
 import datetime
 from configs import *
+from pathlib import Path
 
 
 def tool(**kwargs):
@@ -318,6 +319,37 @@ def save_to_file(filepath, content, prepend=False):
     raise
 
 
+def save_to_external_file(filename, content, prepend=False, base_path=None):
+    """Save content to a file in an external location, creating directories if needed."""
+    # Use environment variable if set, otherwise use default path
+    base_path = base_path or os.getenv('EXTERNAL_STORAGE_PATH', APP_SETTINGS['locale_dropbox_path'])
+    base_path = Path(base_path)
+    full_path = base_path / filename
+    
+    # Validate path is outside project directory
+    try:
+        if not full_path.is_absolute():
+            full_path = full_path.resolve()
+        if not str(full_path).startswith(str(base_path)):
+            raise ValueError("Path must be within the external storage directory")
+            
+        # Create directories if they don't exist
+        full_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        mode = 'r+' if full_path.exists() else 'w'
+        if prepend and full_path.exists():
+            existing_content = full_path.read_text(encoding='utf-8')
+            full_path.write_text(content + existing_content, encoding='utf-8')
+        else:
+            write_mode = 'a' if full_path.exists() else 'w'
+            with open(full_path, write_mode, encoding='utf-8') as f:
+                f.write(content)
+                
+    except Exception as e:
+        print(f"Error saving to external file: {e}")
+        raise
+
+
 @tool()
 def save_to_json_file(data, output_file):
   """Saves data to a JSON file with UTF-8 encoding.
@@ -376,8 +408,7 @@ def generate_id(length=10):
 # -----------------------------------
 # TODO: Implement the following tools
 # -----------------------------------
-def search_web_brave(query):
-  
+def search_web_brave(query):  
   pass
 
 def search_web_google(query):

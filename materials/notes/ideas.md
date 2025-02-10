@@ -1,3 +1,10 @@
+mam asistenta generate questions - napad na workflow - po kroku vygenerovani otazek k nejakemu tematu, vzit tyto otazky, pripadne k tomu (na zacatek) pro kontext pripojit i puvodni zadani pro vygenerovani otazek (nebo jeho shrnutou podobu), a pozadat o vygenerovani dalsich X otazek.
+
+vytvorit univerzalniho asistenta - obycejny dotaz
+
+asistenti
+vygeneruj nazev souboru
+vygeneruj titulek
 
 convert yaml to json
 

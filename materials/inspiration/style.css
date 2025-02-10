@@ -1,0 +1,489 @@
+/* base css variables */
+:root {  
+  /* Primary Colors */
+  --color-primary: #6c63ff; /* Main branding color. Used for primary actions like buttons and overlay buttons. */
+  --color-primary-hover: #8178ff; /* Hover version of main */  
+  --color-secondary: #5753c9; /* TODO: define color and its purpose (it should not be hover color of primary color, but standalone color */
+  
+  /* Background Colors */
+  --bg-main: #121212; /* Main background of the app */
+  --bg-main-hover: #1c1c1c; /* Hover version of main */
+  --bg-secondary: #2b2b2b; /* Background for cards, input fields */
+  --bg-secondary-hover: #373737; /* Hover version of secondary */
+  --bg-tertiary: #444; /* Background for badges, overlay elements */
+  --bg-tertiary-hover: #555; /* Hover version of tertiary */
+  --bg-status-neutral: #457981;
+  --bg-status-success: #73be85;
+  --bg-status-fail: #b1676e; /* Error or validation warning messages */
+  --bg-status-attention: #c0ac6e; /* Warning or caution */
+  --bg-status-level: #64edcf;
+  --bg-status-xp: #d2d442;
+  
+  /* Text Colors */
+  --text-main: #e0e0e0; /* Main text color */
+  --text-secondary: #e0e0e0; /* Main text color */
+  --text-tertiary: #e0e0e0;
+  --text-muted: #9e9e9e; /* Muted text for placeholders, captions. Used for less important text, such as placeholders. */
+  --text-inverted: #fff; /* Text on dark or colored backgrounds (e.g., buttons) or on hover states */  
+  
+  /* State Colors */
+  --color-success: #73be85; /* Success messages */
+  --color-error: #b1676e; /* Error or validation warning messages */
+  --color-warning: #c0ac6e; /* Warning or caution */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+/* Utilities */
+.hidden {
+  display: none;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.text-center {
+  text-align: center;
+}
+
+
+/* UI elements */
+.screen-title {
+  text-align: center;
+  color: var(-text-main);
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.screen-sub-title {
+  text-align: center;
+  color: var(-text-secondary);
+}
+
+.section-title {
+  color: gray; /*var(--text-secondary);*/
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-top: 15px;    
+  margin-bottom: 13px; 
+  text-align: left; 
+  letter-spacing: 1px; 
+}
+
+.header3 {
+  color: var(--text-secondary);
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 15px;    
+  margin-bottom: 15px; 
+  text-align: left;   
+}
+
+.btn {
+  margin: 5px 0;
+  width: 100%;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 16px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: var(--bg-secondary-hover);
+}
+
+.btn-outline {
+  margin: 5px 0;
+  width: 100%;
+  background: none;
+  border: 2px solid var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: 16px;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--text-main);
+  max-width: 400px;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-tertiary {
+  background-color: var(--bg-tertiary);
+  color: var(--text-tertirary);
+  font-size: 14px;
+}
+
+.btn-tertiary:hover {
+  background-color: var(--bg-tertiary-hover);
+}
+
+.back-btn {
+  cursor: pointer;
+  min-width: 30px;
+  min-height: 30px;
+  margin-bottom: 10px;
+  color: var(--text-main);
+  text-align: left;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="white" class="bi bi-arrow-left" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 35px; /* Adjust this as necessary for spacing */
+}
+
+input, select, textarea {
+  /*width: calc(100% - 20px);*/
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #181818;
+  color: white;
+}
+
+
+.text {
+  padding: 10px;
+  margin: 5px 0;
+}
+
+.text-list-item {
+  padding: 2px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--bg-secondary);
+}
+
+.card-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adds space between cards */
+}
+
+.card-item {
+  background-color: var(--bg-secondary);
+  color: var(--text-main);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border: none; /* Remove the default button border */
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.card-item:hover {
+  background-color: var(--bg-secondary-hover);
+  transform: translateY(-2px); /* Subtle lift on hover */
+}
+
+/* Content inside the card button */
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 16px;
+}
+
+.card-badge {
+  background-color: var(--bg-tertiary);
+  color: var(--text-inverted);
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.h-space {
+  min-height: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+.msg-success {
+  color: var(--color-success);
+}
+
+.msg-error {
+  color: var(--color-error);
+}
+
+.top-nav-bar-icon {
+  cursor: pointer;
+  color: gray;
+  margin-left: 10px;
+  height: 26px;
+  width: 26px;
+}
+
+.top-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.flex-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+}
+
+.logo {
+  /*color: var(--color-primary);*/
+  font-style: italic;
+  background: linear-gradient(to bottom, #d3c5f3, var(--color-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-input {
+  margin: 5px 0;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 14px;
+  min-width: 70px;
+}
+
+.completion-status-banner {
+  padding: 15px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 0 auto; 
+  text-align: center;
+}
+
+.banner-title {
+  font-size: 22px; 
+  font-weight: bold;
+}
+
+.banner-message {
+  font-size: 16px; 
+  margin-top: 10px;
+}
+
+.banner-scorecard {
+  font-size: 48px; 
+  font-weight: bold;
+  color: white;
+  margin-top: 10px;
+}
+
+.text-list-item span {
+  font-weight: bold;
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+/* Input Container */
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-container input {
+  flex: 1;
+  padding: 15px 30px 15px 15px;
+}
+
+.clear-input {
+  cursor: pointer;
+  display: flex;
+  position: absolute;
+  top: 11px;
+  right: 10px;  
+  width: 25px;
+  height: 25px;
+  border: none;
+  font-size: 18px;
+  color: black;  
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  background-color: #494949;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+textarea {
+  width: 100%;
+  min-height: 14em;
+}
+
+.clear-input:hover {
+  color: white;
+}
+
+.dropdown {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 10;
+    top: 30px;
+}
+
+.dropdown.hidden {
+  display: none;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0 15px;  /* Changed from margin-left to symmetric margins */
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.7;  /* Slightly reduced from 0.8 for softer appearance */
+  transition: opacity 0.2s ease;  /* Smooth transition for hover effect */
+}
+
+.icon-btn:hover {
+  opacity: 1;
+}
+
+/* Specific adjustment for settings button to align with other elements */
+.settings-btn {
+  margin-right: 20px;  /* Increased right margin specifically for settings button */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23e0e0e0" viewBox="0 0 16 16"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/></svg>');
+}
+
+.edit-btn {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23e0e0e0" viewBox="0 0 16 16"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>');
+}
+
+.delete-btn {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23e0e0e0" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>');
+}
+
+.settings-btn {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%23e0e0e0" viewBox="0 0 16 16"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115l.094-.319z"/></svg>');
+}
+
+/* Tag Input Styles */
+.tag-input-container {
+  background-color: var(--bg-secondary);
+  border-radius: 6px;
+  padding: 5px;
+  margin-bottom: 10px;
+  min-height: 44px;
+  width: 100%;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.tag-pill {
+  background-color: var(--bg-tertiary);
+  color: var(--text-main);
+  padding: 3px 8px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.tag-remove {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  margin-left: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0 2px;
+  opacity: 0.7;
+}
+
+.tag-remove:hover {
+  opacity: 1;
+}
+
+.tag-input {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  padding: 5px;
+  margin: 0;
+  width: 100%;
+  min-width: 120px;
+}
+
+.tag-input:focus {
+  outline: none;
+}
+
+.tag-suggestions {
+  position: absolute;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--bg-tertiary);
+  border-radius: 6px;
+  margin-top: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  width: calc(100% - 20px);
+  z-index: 1000;
+}
+
+.tag-suggestion {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.tag-suggestion:hover {
+  background-color: var(--bg-secondary-hover);
+}
