@@ -11,7 +11,7 @@ permalink: /tags/
 {% for tag in tags %}
   {% assign tag_name = tag | first %}
   {% assign posts = tag | last %}
-  <a href="{{ site.baseurl }}/tag/{{ tag_name | slugify }}" class="tag-item">
+  <a href="#{{ tag_name | slugify }}" class="tag-item">
     <span class="tag-name">{{ tag_name }}</span>
     <span class="tag-count">{{ posts.size }}</span>
   </a>
@@ -58,6 +58,7 @@ permalink: /tags/
 ## Posts by Tag
 
 {% for tag in tags %}
+<div id="{{ tag[0] }}"></div>
 ### {{ tag[0] }}
 {% for post in tag[1] %}
 - [{{ post.title }}]({{ site.baseurl }}{{ post.url }}) <small class="post-date">{{ post.date | date: "%B %d, %Y" }}</small>
