@@ -247,20 +247,19 @@ def assistant_assistant_instructions_creator(input, model=None):
 
 
 @assistant()
-def assistant_generate_poem(input, model=None):
-    """Generates a poem based on the input theme."""
+def assistant_generate_random_poem(model=None):
+    """Generates a random poem."""
     config = {
         "default_model": "gpt-4o",
         "verbose": True
     }
     model = model if model is not None else config['default_model']
-    instructions = """Create a poem based on the theme provided by the user. The poem should be original, creative, and evoke emotions related to the theme. 
+    instructions = """Create a poem, choose any theme you want. The poem should be original, creative, and evoke emotions related to the theme. 
     Use descriptive language, metaphors, and imagery to convey the essence of the theme effectively. 
     The poem should be structured with a coherent flow and rhythm that enhances the overall impact of the piece."""
 
     messages = [
-        {"role": "system", "content": instructions},
-        {"role": "user", "content": input}
+        {"role": "system", "content": instructions}
     ]
     response = fetch_ai(model, messages)
     if config['verbose']:
@@ -363,8 +362,10 @@ def assistant_generate_questions(input, model=None):
 
 
 @assistant()
-def assistant_universal(input, model=None):
+def assistant_universal_no_instructions(input, model=None):
   """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
+  if input is None or input.strip() == "":
+    return "No input provided."
   config = {
     "default_model": "gpt-4o",
     "verbose": True

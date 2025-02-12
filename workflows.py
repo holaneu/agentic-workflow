@@ -18,8 +18,8 @@ def workflow(**kwargs):
 @workflow()
 def workflow_translation_cs_en_yaml(input, model=None):
     """Translates text between Czech and English in YAML format."""
-    if input is None:
-        return None 
+    if input is None or input.strip() == "":
+        return "No input provided." 
     translation = assistant_translator_cs_en_yaml(input=input, model=model)
     if translation:
         translation = translation["message"]["content"].strip()
@@ -122,13 +122,13 @@ def workflow_write_story(input, model=None):
 
 
 @workflow()
-def workflow_download_ai_news(input, model=None):
+def workflow_download_ai_news():
     """Downloads and saves recent AI-related news articles."""
     news = call_api_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
     if news:
         formatted_news = json.dumps(news, indent=2)
         save_to_file("test/news.md", formatted_news + "\n\n-----\n", prepend=True)
-    return news
+    return formatted_news
 
 
 
