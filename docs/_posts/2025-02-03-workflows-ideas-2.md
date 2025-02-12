@@ -3,6 +3,7 @@ layout: default
 title: "Za hranice automatizace: Inovativní workflow, které mohou transformovat Workflows App"
 date: 2025-02-03
 tags: [automation-tools, ai-assistants, workflows]
+category: "test"
 ---
 
 # Za hranice automatizace: Inovativní workflow, které mohou transformovat Workflows App

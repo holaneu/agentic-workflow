@@ -28,7 +28,8 @@ if __name__ == "__main__":
   #print(fetch_ai(model="gemini-2.0-flash-exp", input="kedlubna"))
 
   #print(fetch_ai(model="gpt-4o-mini", input="kedlubna"))
-  
+
+  """
   print("ASSISTANTS")
   print(ASSISTANTS)
 
@@ -41,3 +42,6 @@ if __name__ == "__main__":
     for name, tool in TOOLS.items()
   }
   print(json.dumps(tools_without_functions, indent=2))
+  """
+
+  print(call_api_newsapi(query="openai OR claude OR deepseek OR mistral", domains="techcrunch.com,thenextweb.com", lastDays=5))

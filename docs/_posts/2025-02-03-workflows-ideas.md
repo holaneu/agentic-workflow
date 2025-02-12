@@ -3,6 +3,7 @@ layout: default
 title: "Budoucnost Workflows App: 7 nových funkcí, které bychom rádi viděli"
 date: 2025-02-03
 tags: [automation-tools, ai-assistants, workflows]
+category: "test"
 ---
 
 ## Budoucnost Workflows App: 7 nových funkcí, které bychom rádi viděli

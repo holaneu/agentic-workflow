@@ -8,12 +8,6 @@ theme: null
 # Optional - add author or other metadata
 author: holaneu
 
-# Archives
-collections:
-  archives:
-    output: true
-    permalink: /archives/:path/
-
 # Optional - social links
 social_links:
   github: holaneu

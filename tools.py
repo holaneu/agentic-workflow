@@ -237,6 +237,45 @@ def call_api_of_type_anthropic(model, messages):
 
 
 @tool()
+def call_api_newsapi(query=None, lastDays=None, domains=None):
+  """
+  Fetches news articles from NewsAPI based on configured settings.
+  Returns:
+    dict: News articles data or None if request fails
+  """
+  base_url = "https://newsapi.org/v2/everything"
+  today = datetime.datetime.now()
+  start_date = today - datetime.timedelta(days=lastDays)
+  from_date = start_date.strftime("%Y-%m-%d")
+  to_date = today.strftime("%Y-%m-%d")
+
+  params = {
+    "q": query,
+    "searchIn": "title,description",
+    "from": from_date,
+    "to": to_date,
+    "sortBy": "popularity",
+    "language": "en",
+    "domains": domains,
+    "apiKey": os.getenv("NEWSAPI_API_KEY"),
+    "pageSize": 20,
+    "page": 1
+  }
+
+  try:
+    response = requests.get(base_url, params=params)
+    if response.status_code == 200:
+      return response.json()
+    else:
+      print(f"Error: {response.status_code}")
+      print(response.text)
+      return None
+  except Exception as e:
+    print(f"Error calling NewsAPI: {e}")
+    return None
+
+
+@tool()
 def open_file(filepath):
   """
   Opens and reads a text file, returning its contents as a string.

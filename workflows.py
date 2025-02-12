@@ -1,5 +1,6 @@
 from assistants import *
-from tools import save_to_file, save_to_external_file
+from tools import save_to_file, save_to_external_file, call_api_newsapi
+import json
 
 def workflow(**kwargs):
     """Decorator to define workflow functions with metadata."""
@@ -118,6 +119,17 @@ def workflow_write_story(input, model=None):
         story = story["message"]["content"].strip()
         save_to_file("test/stories.md", story + "\n\n-----\n", prepend=True)
     return story
+
+
+@workflow()
+def workflow_download_ai_news(input, model=None):
+    """Downloads and saves recent AI-related news articles."""
+    news = call_api_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
+    if news:
+        formatted_news = json.dumps(news, indent=2)
+        save_to_file("test/news.md", formatted_news + "\n\n-----\n", prepend=True)
+    return news
+
 
 
 # Extract all workflows dynamically
