@@ -63,29 +63,36 @@
       statusDiv.innerHTML = '';
       responseDiv.innerHTML = '';
       
-      // Validate input
-      if (!inputText.value.trim()) {
-        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
-        return;
-      }
-
-      // Validate workflow selection
+      // Validate workflow selection first
       if (!workflowSelection.value) {
         statusDiv.innerHTML = uiConfigs.labels.select_workflow_error;
         return;
       }
 
+      // Only validate input if there's text in the input field or if it's empty
+      if (inputText.value.trim().length > 0 || workflowSelection.value.includes('input')) {
+        if (!inputText.value.trim()) {
+          statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
+          return;
+        }
+      }
+
       try {
+        let bodyData = {           
+          workflow: workflowSelection.value,
+          type: 'workflow'
+        };
+
+        if (inputText.value.trim() && inputText.value.trim().length > 0) {
+          bodyData.input = inputText.value;
+        }
+
         const response = await fetch('/process', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ 
-            input: inputText.value, 
-            workflow: workflowSelection.value,
-            type: 'workflow'
-          })
+          body: JSON.stringify(bodyData)
         });
         
         const data = await response.json();
@@ -111,27 +118,36 @@
       statusDiv.innerHTML = '';
       responseDiv.innerHTML = '';
       
-      if (!inputText.value.trim()) {
-        statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
-        return;
-      }
-
+      // Validate assistant selection first
       if (!assistantSelection.value) {
         statusDiv.innerHTML = uiConfigs.labels.select_assistant_error;
         return;
       }
+
+      // Only validate input if there's text in the input field or if it's empty
+      if (inputText.value.trim().length > 0 || assistantSelection.value.includes('input')) {
+        if (!inputText.value.trim()) {
+          statusDiv.innerHTML = uiConfigs.labels.empty_input_error;
+          return;
+        }
+      }
       
       try {
+        let bodyData = { 
+          assistant: assistantSelection.value,
+          type: 'assistant'
+        };
+
+        if (inputText.value.trim() && inputText.value.trim().length > 0) {
+          bodyData.input = inputText.value;
+        }
+
         const response = await fetch('/process', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ 
-            input: inputText.value, 
-            assistant: assistantSelection.value,
-            type: 'assistant'
-          })
+          body: JSON.stringify(bodyData)
         });
         
         const data = await response.json();

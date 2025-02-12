@@ -149,11 +149,13 @@ footer {
 
 article {
   border-bottom: 1px solid var(--bg-tertiary);
+  padding: 20px 0;
 }
 
 article .post-title  {
   font-size: 20px;
   font-weight: bold;
+  line-height: 1.4;
 }
 
 article .post-title a {
