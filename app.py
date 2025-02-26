@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
   #print(ASSISTANTS['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
 
-  WORKFLOWS_REGISTRY['workflow_translation_out_yaml']['function'](input="kedlubna")
+  WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="emergent", model="gemini-2.0-flash-exp")
 
   #print(fetch_ai(model="gemini-2.0-flash-exp", input="kedlubna"))
 
