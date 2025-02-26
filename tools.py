@@ -480,7 +480,7 @@ def save_as_printable_html():
 
 # Extract all tools dynamically
 import inspect
-TOOLS = {
+TOOLS_REGISTRY = {
     func.id: {
       'name': func.name, 
       'description': func.description, 
