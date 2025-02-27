@@ -7,7 +7,23 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 
 @app.route('/')
 def index():
-    return render_template('index.html', workflows=WORKFLOWS_REGISTRY, assistants=ASSISTANTS_REGISTRY)
+    return render_template('index.html')
+
+@app.route('/workflows')
+def workflows():
+    return render_template('workflows.html', workflows=WORKFLOWS_REGISTRY, assistants=ASSISTANTS_REGISTRY)
+
+@app.route('/files')
+def files():
+    return render_template('files.html')
+
+@app.route('/database')
+def database():
+    return render_template('database.html')
+
+@app.route('/chat')
+def chat():
+    return render_template('chat.html')
 
 @app.route('/process', methods=['POST'])
 def process():
