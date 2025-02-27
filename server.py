@@ -5,6 +5,10 @@ import inspect
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
+@app.template_filter('active_page')
+def active_page(current_page, page_name):
+    return 'active' if current_page == page_name else ''
+
 @app.route('/')
 def index():
     return render_template('index.html')

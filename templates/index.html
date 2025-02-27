@@ -3,18 +3,13 @@
 <head>
   <title>REXEEK</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
 </head>
 <body>
+  {% include 'partials/sidebar.html' %}
   <div class="container">
-    <h1>REXEEK</h1>    
-        
-    <section class="nav">
-      <a href="{{ url_for('workflows') }}">Workflows</a>
-      <a href="{{ url_for('files') }}">Files</a>
-      <a href="{{ url_for('database') }}">Database</a>
-      <a href="{{ url_for('chat') }}">Chat</a>
-
-    </section>
+    <h1>REXEEK</h1> 
+  </div>
     
 </body>
 </html>

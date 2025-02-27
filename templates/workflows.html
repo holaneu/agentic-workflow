@@ -3,8 +3,10 @@
 <head>
   <title>Workflows</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
 </head>
 <body>
+  {% include 'partials/sidebar.html' %}
   <div class="container">
     <h1>Workflows</h1>    
     <textarea id="input" placeholder="Enter your text input here ..."></textarea>
