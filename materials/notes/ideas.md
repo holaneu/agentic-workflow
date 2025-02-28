@@ -1,10 +1,10 @@
-mam asistenta generate questions - napad na workflow - po kroku vygenerovani otazek k nejakemu tematu, vzit tyto otazky, pripadne k tomu (na zacatek) pro kontext pripojit i puvodni zadani pro vygenerovani otazek (nebo jeho shrnutou podobu), a pozadat o vygenerovani dalsich X otazek.
+I have an assistant "generate questions" – an idea for a workflow – after the step of generating questions on a certain topic, take these questions, possibly also attach the original prompt for generating the questions (or its summarized version) at the beginning for context, and ask for the generation of another X questions.
 
-vytvorit univerzalniho asistenta - obycejny dotaz
+create universal assistant - without any system/assistant instructions
 
-asistenti
-vygeneruj nazev souboru
-vygeneruj titulek
+assistents
+generate file name
+generate title
 
 convert yaml to json
 

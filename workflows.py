@@ -134,7 +134,7 @@ def workflow_download_ai_news():
 
 # Extract all workflows dynamically
 import inspect
-WORKFLOWS = {
+WORKFLOWS_REGISTRY = {
     func.id: {
       'name': func.name, 
       'description': func.description, 

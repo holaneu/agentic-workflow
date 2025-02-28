@@ -1,13 +1,33 @@
 from flask import Flask, request, render_template, jsonify
-from workflows import WORKFLOWS
-from assistants import ASSISTANTS  # You'll need to create this
+from workflows import WORKFLOWS_REGISTRY
+from assistants import ASSISTANTS_REGISTRY  # You'll need to create this
 import inspect
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
+@app.template_filter('active_page')
+def active_page(current_page, page_name):
+    return 'active' if current_page == page_name else ''
+
 @app.route('/')
 def index():
-    return render_template('index.html', workflows=WORKFLOWS, assistants=ASSISTANTS)
+    return render_template('index.html')
+
+@app.route('/workflows')
+def workflows():
+    return render_template('workflows.html', workflows=WORKFLOWS_REGISTRY, assistants=ASSISTANTS_REGISTRY)
+
+@app.route('/files')
+def files():
+    return render_template('files.html')
+
+@app.route('/database')
+def database():
+    return render_template('database.html')
+
+@app.route('/chat')
+def chat():
+    return render_template('chat.html')
 
 @app.route('/process', methods=['POST'])
 def process():
@@ -23,7 +43,7 @@ def process():
             if not workflow_id:
                 return jsonify({'error': 'Missing workflow ID'}), 400
                 
-            workflow = WORKFLOWS.get(workflow_id)
+            workflow = WORKFLOWS_REGISTRY.get(workflow_id)
             if not workflow:
                 return jsonify({'error': 'Invalid workflow'}), 400
             
@@ -49,7 +69,7 @@ def process():
             if not assistant_id:
                 return jsonify({'error': 'Missing assistant ID'}), 400
                 
-            assistant = ASSISTANTS.get(assistant_id)
+            assistant = ASSISTANTS_REGISTRY.get(assistant_id)
             if not assistant:
                 return jsonify({'error': 'Invalid assistant'}), 400
                 

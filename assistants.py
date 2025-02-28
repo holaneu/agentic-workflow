@@ -413,7 +413,7 @@ def assistant_writer(input, model=None):
 
 # Registry of assistants - Extract all assistants dynamically
 import inspect
-ASSISTANTS = {
+ASSISTANTS_REGISTRY = {
     func.id: {
       'name': func.name, 
       'description': func.description, 
