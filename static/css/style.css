@@ -163,7 +163,7 @@ button:hover {
 .sidebar-toggle {
   position: absolute;
   right: 0;
-  top: 20px;
+  top: 0px;
   width: 30px;
   height: 30px;
   background: #2c3e50;
