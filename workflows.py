@@ -1,5 +1,5 @@
 from assistants import *
-from tools import save_to_file, save_to_external_file, call_api_newsapi
+from tools import save_to_file, save_to_external_file, call_api_newsapi, json_db_add_entry, current_datetime_iso, generate_id
 import json
 
 def workflow(**kwargs):
@@ -101,12 +101,20 @@ def workflow_create_assistatnt_prompt(input, model=None):
 
 @workflow()
 def workflow_take_quick_note(input, model=None):
-    """Takes a quick note and saves it to a file."""
+    """Takes a quick note and saves it to both JSON database and file."""
     if input is None:
         return None 
-    save_to_file("test/quick_notes.md", input.strip() + "\n\n-----\n", prepend=True)
-    save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)
-    return input
+    note = input.strip()
+    db_entry = {
+        "id": generate_id(10),
+        "created_at": current_datetime_iso(),
+        "updated_at": current_datetime_iso(),
+        "content": note
+    }
+    json_db_add_entry(db_file_path="outputs/databases/quick_notes.json", collection="notes", entry=db_entry)    
+    save_to_file("test/quick_notes.md", note + "\n\n-----\n", prepend=True)
+    #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)    
+    return note
 
 
 @workflow()

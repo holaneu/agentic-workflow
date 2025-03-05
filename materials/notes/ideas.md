@@ -1,3 +1,37 @@
+
+# -----------------------------------
+# TODO: Implement the following tools
+# -----------------------------------
+def search_web_brave(query):  
+  pass
+
+def search_web_google(query):
+  pass
+
+def commit_to_github():
+  pass
+
+def fetch_from_github():
+  pass
+
+def download_content_from_url():
+  pass
+
+def download_youtube_video_transcript():
+  pass
+
+def download_youtube_video():
+  pass
+
+def convert_markdown_to_html():
+  pass
+
+def convert_html_to_markdown():
+  pass
+
+def save_as_printable_html():
+  pass
+
 I have an assistant "generate questions" – an idea for a workflow – after the step of generating questions on a certain topic, take these questions, possibly also attach the original prompt for generating the questions (or its summarized version) at the beginning for context, and ask for the generation of another X questions.
 
 create universal assistant - without any system/assistant instructions

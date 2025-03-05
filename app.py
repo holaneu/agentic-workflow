@@ -44,3 +44,7 @@ if __name__ == "__main__":
   """
 
   #print(call_api_newsapi(query="openai OR claude OR deepseek OR mistral", domains="techcrunch.com,thenextweb.com", lastDays=5))
+
+  print(generate_id(10))
+
+  print(current_datetime_iso())

@@ -444,38 +444,125 @@ def generate_id(length=10):
   return ''.join(random.choice(chars) for _ in range(length))
 
 
-# -----------------------------------
-# TODO: Implement the following tools
-# -----------------------------------
-def search_web_brave(query):  
-  pass
+@tool()
+def current_datetime_iso():
+    """
+    Returns the current datetime in ISO 8601 format.
+    Returns:
+        str: Current datetime in ISO 8601 format (e.g. "2025-03-05T11:00:29.307714+00:00")
+    Example:
+        >>> current_datetime_iso()
+        '2025-03-05T11:00:29.307714+00:00'
+    """
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()    
 
-def search_web_google(query):
-  pass
 
-def commit_to_github():
-  pass
+@tool(category='database')
+def json_db_load(filepath: str) -> dict:
+    """
+    Load JSON database from a file.
+    Args:
+        filepath (str): Path to the JSON database file
+    Returns:
+        dict: Database content or empty dict if file not found
+    """
+    try:
+        with open(filepath, "r", encoding="utf-8") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
 
-def fetch_from_github():
-  pass
 
-def download_content_from_url():
-  pass
+@tool(category='database')
+def json_db_save(filepath: str, data: dict) -> None:
+    """
+    Save JSON database to a file.
+    Args:
+        filepath (str): Path to save the JSON database
+        data (dict): Data to save
+    """
+    with open(filepath, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=2, ensure_ascii=False)
 
-def download_youtube_video_transcript():
-  pass
 
-def download_youtube_video():
-  pass
+@tool(category='database')
+def json_db_add_entry(db_file_path: str, collection: str, entry: dict) -> str:
+    """
+    Add a new entry to a collection in the JSON database.
+    Args:
+        db_file_path (str): Database file path
+        collection (str): Name of the collection
+        entry (dict): Entry data to add
+    Returns:
+        str: ID of the added entry
+    """
+    db_data = json_db_load(db_file_path)
+    if "collections" not in db_data:
+        db_data["collections"] = {}        
+    if collection not in db_data["collections"]:
+        db_data["collections"][collection] = []        
+    entry_id = entry.get("id", generate_id())
+    entry["id"] = entry_id    
+    db_data["collections"][collection].append(entry)    
+    json_db_save(db_file_path, db_data)    
+    return entry_id
 
-def convert_markdown_to_html():
-  pass
 
-def convert_html_to_markdown():
-  pass
+@tool(category='database')
+def json_db_get_entry(filepath: str, collection: str, entry_id: str) -> dict:
+    """
+    Retrieve a single entry by ID from the database.
+    Args:
+        filepath (str): Database file path
+        collection (str): Collection name
+        entry_id (str): Entry ID to find
+    Returns:
+        dict: Entry data or None if not found
+    """
+    db = json_db_load(filepath)
+    return next((entry for entry in db.get(collection, []) 
+                if entry["id"] == entry_id), None)
 
-def save_as_printable_html():
-  pass
+
+@tool(category='database')
+def json_db_update_entry(filepath: str, collection: str, entry_id: str, updates: dict) -> bool:
+    """
+    Update an existing entry by ID.
+    Args:
+        filepath (str): Database file path
+        collection (str): Collection name
+        entry_id (str): Entry ID to update
+        updates (dict): New data to update
+    Returns:
+        bool: True if updated successfully
+    """
+    db = json_db_load(filepath)
+    for entry in db.get(collection, []):
+        if entry["id"] == entry_id:
+            entry.update(updates)
+            json_db_save(filepath, db)
+            return True
+    return False
+
+
+@tool(category='database')
+def json_db_delete_entry(filepath: str, collection: str, entry_id: str) -> bool:
+    """
+    Delete an entry by ID from the database.
+    Args:
+        filepath (str): Database file path
+        collection (str): Collection name
+        entry_id (str): Entry ID to delete
+    Returns:
+        bool: True if deleted successfully
+    """
+    db = json_db_load(filepath)
+    original_len = len(db.get(collection, []))
+    db[collection] = [e for e in db.get(collection, []) if e["id"] != entry_id]
+    if len(db[collection]) < original_len:
+        json_db_save(filepath, db)
+        return True
+    return False
 
 
 # Extract all tools dynamically
