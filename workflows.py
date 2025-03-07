@@ -1,6 +1,8 @@
 from assistants import *
-from tools import save_to_file, save_to_external_file, call_api_newsapi, json_db_add_entry, current_datetime_iso, generate_id
+from tools import save_to_file, save_to_external_file, call_api_newsapi, json_db_add_entry, current_datetime_iso, generate_id, output_folder_path
+from configs import APP_SETTINGS
 import json
+import os
 
 def workflow(**kwargs):
     """Decorator to define workflow functions with metadata."""
@@ -23,7 +25,7 @@ def workflow_translation_cs_en_yaml(input, model=None):
     translation = assistant_translator_cs_en_yaml(input=input, model=model)
     if translation:
         translation = translation["message"]["content"].strip()
-        save_to_file("test/slovnicek.txt", translation + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("slovnicek.txt"), translation + "\n\n-----\n", prepend=True)
     return translation
 
 
@@ -35,7 +37,7 @@ def workflow_translation_cs_en(input, model=None):
     translation = assistant_translator_cs_en(input=input, model=model)
     if translation:
         translation = translation["message"]["content"].strip()
-        save_to_file("test/translations.txt", translation + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("translations.txt"), translation + "\n\n-----\n", prepend=True)
     return translation
 
 
@@ -47,7 +49,7 @@ def workflow_text_summarization(input, model=None):
     summarization = assistant_summarize_text(input=input, model=model)
     if summarization:
         summarization = summarization["message"]["content"].strip()
-        save_to_file("test/summaries.txt", summarization + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("summaries.txt"), summarization + "\n\n-----\n", prepend=True)
     return summarization
 
 
@@ -59,7 +61,7 @@ def workflow_situation_analysis(input, model=None):
     analysis = assistant_analyze_situation(input=input, model=model)
     if analysis:
         analysis = analysis["message"]["content"].strip()
-        save_to_file("test/situace.txt", analysis + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("situace.txt"), analysis + "\n\n-----\n", prepend=True)
     return analysis
 
 
@@ -71,7 +73,7 @@ def workflow_video_transcript_summarization(input, model=None):
     summarization = assistant_summarize_video_transcript(input=input, model=model)
     if summarization:
         summarization = summarization["message"]["content"].strip()
-        save_to_file("test/video_transcript_summaries.txt", summarization + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("video_transcript_summaries.txt"), summarization + "\n\n-----\n", prepend=True)
     return summarization
 
 
@@ -83,7 +85,7 @@ def workflow_explain_simply_lexicon(input, model=None):
     lexicon = assistant_explain_simply_lexicon(input=input, model=model)
     if lexicon:
         lexicon = lexicon["message"]["content"].strip()
-        save_to_file("test/lexicon.txt", lexicon + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("lexicon.txt"), lexicon + "\n\n-----\n", prepend=True)
     return lexicon
 
 
@@ -95,7 +97,7 @@ def workflow_create_assistatnt_prompt(input, model=None):
     assistant = assistant_assistant_instructions_creator(input=input, model=model)
     if assistant:
         assistant = assistant["message"]["content"].strip()
-        save_to_file("test/assistants.txt", assistant + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("assistants.txt"), assistant + "\n\n-----\n", prepend=True)
     return assistant
 
 
@@ -111,8 +113,9 @@ def workflow_take_quick_note(input, model=None):
         "updated_at": current_datetime_iso(),
         "content": note
     }
-    json_db_add_entry(db_file_path="outputs/databases/quick_notes.json", collection="notes", entry=db_entry)    
-    save_to_file("test/quick_notes.md", note + "\n\n-----\n", prepend=True)
+    db_file_path = output_folder_path("databases/quick_notes.json") 
+    json_db_add_entry(db_file_path=db_file_path, collection="notes", entry=db_entry)
+    save_to_file(output_folder_path("quick_notes.md"), note + "\n\n-----\n", prepend=True)
     #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)    
     return note
 
@@ -125,7 +128,7 @@ def workflow_write_story(input, model=None):
     story = assistant_writer(input=input, model=model)
     if story:
         story = story["message"]["content"].strip()
-        save_to_file("test/stories.md", story + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
     return story
 
 
@@ -135,7 +138,7 @@ def workflow_download_ai_news():
     news = call_api_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
     if news:
         formatted_news = json.dumps(news, indent=2)
-        save_to_file("test/news.md", formatted_news + "\n\n-----\n", prepend=True)
+        save_to_file(output_folder_path("news.md"), formatted_news + "\n\n-----\n", prepend=True)
     return formatted_news
 
 

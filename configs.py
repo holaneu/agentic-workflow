@@ -5,7 +5,7 @@ load_dotenv()
 
 # Application Settings
 APP_SETTINGS = {
-  "output_folder": "outputs",
+  "output_folder": "outputs/test",
   "logs_folder": "logs",
   "locale_dropbox_path": os.getenv('LOCALE_DROPBOX_PATH'),
 }

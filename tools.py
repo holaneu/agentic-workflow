@@ -324,7 +324,8 @@ def save_to_file(filepath, content, prepend=False):
     if ".." in filepath or filepath.startswith("/"):
       raise ValueError("Invalid filepath: Path traversal not allowed")    
     
-    full_path = os.path.join(APP_SETTINGS["output_folder"], filepath)
+    #full_path = os.path.join(APP_SETTINGS["output_folder"], filepath)
+    full_path = filepath
     directory = os.path.dirname(full_path)
     if directory and not os.path.exists(directory):
       os.makedirs(directory)
@@ -454,7 +455,12 @@ def current_datetime_iso():
         >>> current_datetime_iso()
         '2025-03-05T11:00:29.307714+00:00'
     """
-    return datetime.datetime.now(datetime.timezone.utc).isoformat()    
+    return datetime.datetime.now(datetime.timezone.utc).isoformat()   
+
+
+@tool()
+def output_folder_path(file_path: str) -> str:
+    return os.path.join(APP_SETTINGS["output_folder"], file_path) 
 
 
 @tool(category='database')
@@ -503,7 +509,10 @@ def json_db_add_entry(db_file_path: str, collection: str, entry: dict) -> str:
         db_data["collections"][collection] = []        
     entry_id = entry.get("id", generate_id())
     entry["id"] = entry_id    
-    db_data["collections"][collection].append(entry)    
+    db_data["collections"][collection].insert(0, entry)
+
+    if "db_info" in db_data:
+        db_data["db_info"]["updated_at"] = current_datetime_iso()
     json_db_save(db_file_path, db_data)    
     return entry_id
 
