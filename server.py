@@ -29,6 +29,10 @@ def database():
 def chat():
     return render_template('chat.html')
 
+@app.route('/apps')
+def apps():
+    return render_template('apps.html')
+
 @app.route('/process', methods=['POST'])
 def process():
     try:

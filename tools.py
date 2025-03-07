@@ -101,7 +101,7 @@ def call_api_of_type_openai_official(model, input):
       "output": completion_dict
     }
     log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-    save_to_file(content=log_content, filepath=log_filepath)
+    save_to_file(content=log_content, filepath=output_folder_path(log_filepath))
     output = {
         "status": "call_api_of_type_openai_official: Success",
         "message": {
@@ -176,7 +176,7 @@ def call_api_of_type_openai_v2(model, input):
         "output": result
       }
       log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-      save_to_file(content=log_content, filepath=log_filepath)
+      save_to_file(content=log_content, filepath=output_folder_path(log_filepath))
       output = {
         "status": "call_api_of_type_openai_v2: Success",
         "message": {
