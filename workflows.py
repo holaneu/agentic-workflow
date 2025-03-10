@@ -149,7 +149,7 @@ def workflow_quiz_from_text(input, model=None):
     Processes a text input and generates quiz questions with answers in json format.    
     """
     if input is None:   
-      source_text = open_file("private/les.txt")
+      return "no input provided"
     source_text = input.strip()
     instructions_questions = f"""Na základě zdrojového textu napiš otázky, které se ptají na podstatné informace uvedené ve zdrojovém textu. Přidej ke každé otázce také stručnou odpověď. Pravidla: 
     Na každou otázku bude vždy pouze jedna jednoznačná správná odpověď. 
@@ -220,6 +220,30 @@ def workflow_quiz_from_text(input, model=None):
     save_to_file(output_folder_path("quizzes.txt"), quiz_questions + "\n\n-----\n", prepend=True)
     return quiz_questions
     
+
+@workflow()
+def workflow_exctract_theses(input, model=None):
+    """Exctracts all theses from the input text and saves output to the persistant memory."""
+    if input is None:
+        return "No input provided." 
+    source_text = input.strip()
+    instructions_theses = f"""Analyzuj zdrojový text a extrahuj všechny tvrzení (teze) ze zdrojového textu a vypiš je ve strukturovaných bodech. Teze jsou krátké výroky, které shrnují hlavní myšlenku nebo obsah textu. Zajisti úplnost extrakce bez vynechání jakékoli teze. Zachovej původní význam, důležité informace a přesnost formulací. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
+
+    Vstupní text:
+    {source_text}
+
+    Výstup:
+    - [teze 1]
+    - [teze 2]
+    - [teze 3]
+    """
+    theses = assistant_universal_no_instructions(input=instructions_theses, model="gpt-4o")
+    if not theses or not theses.get("message", {}).get("content"):
+        return "no tezis generated"
+    theses = theses.get("message", {}).get("content", "").strip()
+    save_to_file(output_folder_path("theses.txt"), theses + "\n\n-----\n", prepend=True) 
+    return theses
+
 
 
 # Extract all workflows dynamically
