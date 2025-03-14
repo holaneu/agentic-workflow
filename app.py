@@ -10,23 +10,23 @@ from tools import *
 # ----------------------
 
 if __name__ == "__main__":
-  #print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
+  # print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
 
-  #print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
+  # print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
 
-  #print('\ngemini:\n', fetch_ai("gemini-1.5-flash", "What is the capital of France?"))
+  # print('\ngemini:\n', fetch_ai("gemini-1.5-flash", "What is the capital of France?"))
 
-  #save_to_file(content=fetch_ai(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
+  # save_to_file(content=fetch_ai(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
 
-  #print(fetch_ai(input="write ahoj", model="mistral-small-latest"))    
+  # print(fetch_ai(input="write ahoj", model="mistral-small-latest"))    
 
-  #print(ASSISTANTS['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
+  # print(ASSISTANTS['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
 
-  #WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
+  # WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
 
-  #print(fetch_ai(model="gemini-2.0-flash-exp", input="kedlubna"))
+  # print(fetch_ai(model="gemini-2.0-flash-exp", input="kedlubna"))
 
-  #print(fetch_ai(model="gpt-4o-mini", input="kedlubna"))
+  # print(fetch_ai(model="gpt-4o-mini", input="kedlubna"))
 
   """
   print("ASSISTANTS_REGISTRY")
@@ -43,8 +43,26 @@ if __name__ == "__main__":
   print(json.dumps(tools_without_functions, indent=2))
   """
 
-  #print(call_api_newsapi(query="openai OR claude OR deepseek OR mistral", domains="techcrunch.com,thenextweb.com", lastDays=5))
+  # print(call_api_newsapi(query="openai OR claude OR deepseek OR mistral", domains="techcrunch.com,thenextweb.com", lastDays=5))
 
-  print(generate_id(10))
+  # print(generate_id(10))
 
-  print(current_datetime_iso())
+  # print(current_datetime_iso())
+
+  # print(brave_search("openai"))
+
+  # print(download_web_sourcecode("https://martinvlach.cz/zivot-se-ma-zit-ne-vymyslet/"))
+ 
+  # print(download_web_readable_content("https://martinvlach.cz/zivot-se-ma-zit-ne-vymyslet/", "body main h1, body main p, body main bloquete"))
+
+  urls = crawl_website_for_urls(
+    start_url="https://martinvlach.cz/rubrika/all/",
+    url_pattern="https://martinvlach.cz/rubrika/all/",
+    max_pages=1000
+  )
+  print(f"\n *** urls: \n {urls} \n\n")
+  specific_urls = extract_urls_from_pages(
+      urls=urls,
+      css_selector="body main"
+  )
+  print(f" *** specific_urls: \n {specific_urls} \n\n")

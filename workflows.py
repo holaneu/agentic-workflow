@@ -1,5 +1,5 @@
 from assistants import *
-from tools import save_to_file, save_to_external_file, call_api_newsapi, json_db_add_entry, current_datetime_iso, generate_id, output_folder_path, open_file
+from tools import save_to_file, save_to_external_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, output_folder_path, open_file
 from configs import APP_SETTINGS
 import json
 import os
@@ -135,7 +135,7 @@ def workflow_write_story(input, model=None):
 @workflow()
 def workflow_download_ai_news():
     """Downloads and saves recent AI-related news articles."""
-    news = call_api_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
+    news = download_news_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
     if news:
         formatted_news = json.dumps(news, indent=2)
         save_to_file(output_folder_path("news.md"), formatted_news + "\n\n-----\n", prepend=True)
@@ -227,7 +227,7 @@ def workflow_exctract_theses(input, model=None):
     if input is None:
         return "No input provided." 
     source_text = input.strip()
-    instructions_theses = f"""Analyzuj zdrojový text a extrahuj všechny tvrzení (teze) ze zdrojového textu a vypiš je ve strukturovaných bodech. Teze jsou krátké výroky, které shrnují hlavní myšlenku nebo obsah textu. Zajisti úplnost extrakce bez vynechání jakékoli teze. Zachovej původní význam, důležité informace a přesnost formulací. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
+    instructions_theses = f"""Analyzuj zdrojový text a extrahuj všechny tvrzení (teze) ze zdrojového textu a vypiš je ve strukturovaných bodech. Teze jsou krátké výroky, které shrnují hlavní myšlenku nebo obsah textu. Zajisti úplnost extrakce bez vynechání jakékoli teze. Zachovej původní význam, důležité informace a přesnost formulací. Používej samostatné teze tzn. rozděl složené teze na jednotlivé samostatné teze. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
 
     Vstupní text:
     {source_text}
@@ -244,6 +244,28 @@ def workflow_exctract_theses(input, model=None):
     save_to_file(output_folder_path("theses.txt"), theses + "\n\n-----\n", prepend=True) 
     return theses
 
+
+@workflow()
+def workflow_write_story_reviewed(input, model=None):
+    """Generates short feel-good stories reviewed by ai-editor."""
+    if input is None:
+        return "No input provided." 
+    story = assistant_writer(input=input, model=model)
+    if not story or not story.get("message", {}).get("content"):
+        return "no story generated"
+    story = story.get("message", {}).get("content", "").strip()
+    save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+    instructions_editor = f"""Jseš profesionální editor povídek, který posuzuje povídky a poskytuje zpětnou vazbu k jejich úpravě a zlepšení. Analyzuj vstupní text povídky a její slabé stránky a napiš jasné a stručné doporučení jak text upravit tak aby se odstranily tyto slabé stránky. Doporučení piš formou odrážek v neformátovaném plain text formátu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
+
+    Vstupní text:
+    {story}
+    """
+    editor_feedback = assistant_universal_no_instructions(input=instructions_editor, model="gpt-4o")
+    if not editor_feedback or not editor_feedback.get("message", {}).get("content"):
+        return "no editor's review generated"
+    editor_feedback = editor_feedback.get("message", {}).get("content", "").strip()
+    save_to_file(output_folder_path("stories_reviewed.md"), story + "\n\n---\nFeedback:\n\n" + editor_feedback + "\n\n-----\n", prepend=True)
+    return editor_feedback
 
 
 # Extract all workflows dynamically
