@@ -781,6 +781,102 @@ def extract_urls_from_pages(urls: list, css_selector: str) -> list:
     return list(found_urls)
 
 
+@tool()
+def commit_to_github(files: list, commit_message: str, repo_name: str, branch: str = "main") -> dict:
+    """
+    Commits and pushes files to a GitHub repository.
+    
+    Args:
+        files (list): List of file paths to commit
+        commit_message (str): Commit message
+        repo_name (str): Name of repository in format "owner/repo"
+        branch (str): Branch name to commit to (default: "main")
+        
+    Returns:
+        dict: Result of the operation containing status and details
+        
+    Example:
+        >>> files = ["posts/post1.md", "posts/post2.md"]
+        >>> result = commit_to_github(
+        ...     files=files,
+        ...     commit_message="Add new blog posts",
+        ...     repo_name="username/blog-repo"
+        ... )
+    """
+    try:
+        from github import Github
+        import base64
+        import os
+
+        # Get GitHub token from environment
+        github_token = os.getenv('GITHUB_ACCESS_TOKEN')
+        if not github_token:
+            return {
+                "success": False,
+                "error": "GITHUB_ACCESS_TOKEN environment variable not set"
+            }
+
+        # Initialize GitHub client
+        g = Github(github_token)
+        repo = g.get_repo(repo_name)
+
+        # Get the branch reference
+        ref = f"heads/{branch}"
+        branch_ref = repo.get_git_ref(ref)
+        branch_sha = branch_ref.object.sha
+        base_tree = repo.get_git_tree(branch_sha)
+
+        # Create blob for each file
+        element_list = []
+        for file_path in files:
+            try:
+                with open(file_path, 'r', encoding='utf-8') as file:
+                    content = file.read()
+                    # Create blob
+                    blob = repo.create_git_blob(content, "utf-8")
+                    element = {
+                        "path": file_path,
+                        "mode": "100644",
+                        "type": "blob",
+                        "sha": blob.sha
+                    }
+                    element_list.append(element)
+            except Exception as e:
+                return {
+                    "success": False,
+                    "error": f"Error processing file {file_path}: {str(e)}"
+                }
+
+        # Create tree
+        tree = repo.create_git_tree(element_list, base_tree)
+        parent = repo.get_git_commit(branch_sha)
+        
+        # Create commit
+        commit = repo.create_git_commit(
+            message=commit_message,
+            tree=tree,
+            parents=[parent]
+        )
+        
+        # Update branch reference
+        branch_ref.edit(commit.sha)
+
+        return {
+            "success": True,
+            "details": {
+                "commit_sha": commit.sha,
+                "commit_url": commit.html_url,
+                "files_committed": len(files)
+            }
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e)
+        }
+
+
 # Extract all tools dynamically
 import inspect
 TOOLS_REGISTRY = {
