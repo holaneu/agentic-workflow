@@ -108,13 +108,9 @@ def workflow_take_quick_note(input, model=None):
         return None 
     note = input.strip()
     db_entry = {
-        "id": generate_id(10),
-        "created_at": current_datetime_iso(),
-        "updated_at": current_datetime_iso(),
         "content": note
     }
-    db_file_path = output_folder_path("databases/quick_notes.json") 
-    json_db_add_entry(db_file_path=db_file_path, collection="notes", entry=db_entry)
+    json_db_add_entry(db_filepath=output_folder_path("databases/quick_notes.json"), collection="notes", entry=db_entry)
     save_to_file(output_folder_path("quick_notes.md"), note + "\n\n-----\n", prepend=True)
     #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)    
     return note
@@ -250,22 +246,31 @@ def workflow_write_story_reviewed(input, model=None):
     """Generates short feel-good stories reviewed by ai-editor."""
     if input is None:
         return "No input provided." 
-    story = assistant_writer(input=input, model=model)
-    if not story or not story.get("message", {}).get("content"):
+    story = assistant_writer(input=input, model=model).get("message", {}).get("content", "").strip()
+    if not story:
         return "no story generated"
-    story = story.get("message", {}).get("content", "").strip()
     save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
     instructions_editor = f"""Jseš profesionální editor povídek, který posuzuje povídky a poskytuje zpětnou vazbu k jejich úpravě a zlepšení. Analyzuj vstupní text povídky a její slabé stránky a napiš jasné a stručné doporučení jak text upravit tak aby se odstranily tyto slabé stránky. Doporučení piš formou odrážek v neformátovaném plain text formátu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
 
     Vstupní text:
     {story}
     """
-    editor_feedback = assistant_universal_no_instructions(input=instructions_editor, model="gpt-4o")
-    if not editor_feedback or not editor_feedback.get("message", {}).get("content"):
+    editor_feedback = assistant_universal_no_instructions(input=instructions_editor, model="gpt-4o").get("message", {}).get("content")
+    if not editor_feedback:
         return "no editor's review generated"
-    editor_feedback = editor_feedback.get("message", {}).get("content", "").strip()
     save_to_file(output_folder_path("stories_reviewed.md"), story + "\n\n---\nFeedback:\n\n" + editor_feedback + "\n\n-----\n", prepend=True)
-    return editor_feedback
+    instructions_edit_story = f"""
+    Jseš spisovatel povídek. Tvým úkolem je upravit původní text povídky přesně podle všech instrukcí k úpravě textu a vytvořit tak novou verzi povídky, ve které budou odstraněny slabé stránky a byla zlepšena kvalita textu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
+
+    Původní text:
+    {story}
+
+    Instrukce k úpravě textu:
+    {editor_feedback}
+    """
+    writer_edited_story = assistant_universal_no_instructions(input=instructions_edit_story, model="gpt-4o").get("message", {}).get("content")
+    save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+    return writer_edited_story
 
 
 # Extract all workflows dynamically

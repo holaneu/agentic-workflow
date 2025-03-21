@@ -55,8 +55,8 @@ if __name__ == "__main__":
  
   # print(download_web_readable_content("https://martinvlach.cz/zivot-se-ma-zit-ne-vymyslet/", "body main h1, body main p, body main bloquete"))
 
-  """
-  base_url="https://martinvlach.cz"
+def testing20250317():
+  base_url=os.getenv('MV_BASE_URL')
   urls = crawl_website_for_urls(
     start_url=f"{base_url}/rubrika/all/",
     url_pattern=f"{base_url}/rubrika/all/",
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt \n")
   print(" *** DONE *** \n\n")
-"""
+
 
 # docs/_posts/2025-02-03-workflows-ideas-2.md
 # docs/_posts/2025-02-03-workflows-ideas.md
@@ -87,10 +87,21 @@ result = commit_to_github(
 )
 """
 
-from private.urls_list import urls
-base_url = os.getenv('MV_BASE_URL')
-for url in urls[20:]:
-  parsed_content = download_web_readable_content(url, "body main h1, body main p, body main bloquete")
-  url_edited = url.replace(base_url, "").replace("/", "")
-  save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
-  print(f" *** saved: {url_edited}.txt")
+def testing20250319():
+  from private.urls_list import urls
+  base_url = os.getenv('MV_BASE_URL')
+  for url in urls[20:]:
+    parsed_content = download_web_readable_content(url, "body main h1, body main p, body main bloquete")
+    url_edited = url.replace(base_url, "").replace("/", "")
+    save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
+    print(f" *** saved: {url_edited}.txt")
+
+
+def testing20250321():
+  dbfile = "outputs/test/databases/quick_notes.json"
+  print(json_db_get_entry(db_filepath=dbfile, collection="notes", entry_id="SQ99Ts3BNT"))
+  print(json_db_update_entry(db_filepath=dbfile, collection="notes", entry_id="SQ99Ts3BNT", updates={"content": "mazlicek"}))
+  # print(json_db_add_entry(db_filepath=dbfile, collection="notes", entry={"content": "prdolka 1"}))
+  print(json_db_delete_entry(db_filepath=dbfile, collection="notes", entry_id="0bx7MHfAU0"))
+
+testing20250321()

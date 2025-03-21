@@ -465,7 +465,7 @@ def output_folder_path(file_path: str) -> str:
 
 
 @tool(category='database')
-def json_db_load(filepath: str) -> dict:
+def json_db_load(db_filepath: str) -> dict:
     """
     Load JSON database from a file.
     Args:
@@ -474,52 +474,26 @@ def json_db_load(filepath: str) -> dict:
         dict: Database content or empty dict if file not found
     """
     try:
-        with open(filepath, "r", encoding="utf-8") as file:
+        with open(db_filepath, "r", encoding="utf-8") as file:
             return json.load(file)
     except FileNotFoundError:
         return {}
 
 
 @tool(category='database')
-def json_db_save(filepath: str, data: dict) -> None:
+def json_db_save(db_filepath: str, data: dict) -> None:
     """
     Save JSON database to a file.
     Args:
         filepath (str): Path to save the JSON database
         data (dict): Data to save
     """
-    with open(filepath, "w", encoding="utf-8") as file:
+    with open(db_filepath, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=2, ensure_ascii=False)
 
 
 @tool(category='database')
-def json_db_add_entry(db_file_path: str, collection: str, entry: dict) -> str:
-    """
-    Add a new entry to a collection in the JSON database.
-    Args:
-        db_file_path (str): Database file path
-        collection (str): Name of the collection
-        entry (dict): Entry data to add
-    Returns:
-        str: ID of the added entry
-    """
-    db_data = json_db_load(db_file_path)
-    if "collections" not in db_data:
-        db_data["collections"] = {}        
-    if collection not in db_data["collections"]:
-        db_data["collections"][collection] = []        
-    entry_id = entry.get("id", generate_id())
-    entry["id"] = entry_id    
-    db_data["collections"][collection].insert(0, entry)
-
-    if "db_info" in db_data:
-        db_data["db_info"]["updated_at"] = current_datetime_iso()
-    json_db_save(db_file_path, db_data)    
-    return entry_id
-
-
-@tool(category='database')
-def json_db_get_entry(filepath: str, collection: str, entry_id: str) -> dict:
+def json_db_get_entry(db_filepath: str, collection: str, entry_id: str) -> dict:
     """
     Retrieve a single entry by ID from the database.
     Args:
@@ -529,13 +503,57 @@ def json_db_get_entry(filepath: str, collection: str, entry_id: str) -> dict:
     Returns:
         dict: Entry data or None if not found
     """
-    db = json_db_load(filepath)
-    return next((entry for entry in db.get(collection, []) 
-                if entry["id"] == entry_id), None)
+    db = json_db_load(db_filepath)
+    # return next((entry for entry in db.get(collection, []) if entry["id"] == entry_id), None)
+    for entry in db.get("collections", {}).get(collection, []):
+        if entry["id"] == entry_id:
+            return entry
+    return None
 
 
 @tool(category='database')
-def json_db_update_entry(filepath: str, collection: str, entry_id: str, updates: dict) -> bool:
+def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
+  """
+  Add a new entry to a collection in the JSON database.
+  Args:
+    db_file_path (str): Database file path
+    collection (str): Name of the collection
+    entry (dict): Entry data to add
+  Returns:
+    str: ID of the added entry
+  """
+  db_data = json_db_load(db_filepath)
+  if "collections" not in db_data:
+    db_data["collections"] = {}        
+  if collection not in db_data["collections"]:
+    db_data["collections"][collection] = []
+
+  entry_datetime = current_datetime_iso()     
+
+  # Check schema for required timestamps
+  if "db_json_schema" in db_data:
+    schema = db_data["db_json_schema"]
+    if "collections" in schema.get("properties", {}):
+      collection_schema = schema["properties"]["collections"]["properties"].get(collection, {})
+      if "items" in collection_schema:
+        required_fields = collection_schema["items"].get("required", [])        
+        if "created_at" in required_fields and "created_at" not in entry:
+          entry["created_at"] = entry_datetime          
+        if "updated_at" in required_fields and "updated_at" not in entry:
+          entry["updated_at"] = entry_datetime
+
+  entry_id = entry.get("id", generate_id())
+  entry["id"] = entry_id    
+  db_data["collections"][collection].insert(0, entry)
+
+  if "db_info" in db_data:
+    db_data["db_info"]["updated_at"] = entry_datetime
+  json_db_save(db_filepath, db_data)    
+  return entry_id
+
+
+@tool(category='database')
+def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updates: dict) -> bool:
     """
     Update an existing entry by ID.
     Args:
@@ -546,17 +564,33 @@ def json_db_update_entry(filepath: str, collection: str, entry_id: str, updates:
     Returns:
         bool: True if updated successfully
     """
-    db = json_db_load(filepath)
-    for entry in db.get(collection, []):
+    db = json_db_load(db_filepath)
+    for entry in db.get("collections", {}).get(collection, []):
         if entry["id"] == entry_id:
+            entry_datetime = current_datetime_iso()
+
+            # Check schema for required timestamps
+            if "db_json_schema" in db:
+              schema = db["db_json_schema"]
+              if "collections" in schema.get("properties", {}):
+                collection_schema = schema["properties"]["collections"]["properties"].get(collection, {})
+                if "items" in collection_schema:
+                  required_fields = collection_schema["items"].get("required", [])                  
+                  if "created_at" in required_fields and "created_at" not in entry:
+                    updates["created_at"] = entry_datetime                    
+                  if "updated_at" in required_fields and "updated_at" not in entry:
+                    updates["updated_at"] = entry_datetime
+
             entry.update(updates)
-            json_db_save(filepath, db)
+            if "db_info" in db:
+              db["db_info"]["updated_at"] = entry_datetime
+            json_db_save(db_filepath, db)
             return True
     return False
 
 
 @tool(category='database')
-def json_db_delete_entry(filepath: str, collection: str, entry_id: str) -> bool:
+def json_db_delete_entry(db_filepath: str, collection: str, entry_id: str) -> bool:
     """
     Delete an entry by ID from the database.
     Args:
@@ -566,11 +600,14 @@ def json_db_delete_entry(filepath: str, collection: str, entry_id: str) -> bool:
     Returns:
         bool: True if deleted successfully
     """
-    db = json_db_load(filepath)
-    original_len = len(db.get(collection, []))
-    db[collection] = [e for e in db.get(collection, []) if e["id"] != entry_id]
-    if len(db[collection]) < original_len:
-        json_db_save(filepath, db)
+    db = json_db_load(db_filepath)
+    db_collection = db.get("collections", {}).get(collection, [])
+    original_len = len(db_collection)
+    db["collections"][collection] = [e for e in db_collection if e["id"] != entry_id]
+    if len(db["collections"][collection]) < original_len:
+        if "db_info" in db:
+            db["db_info"]["updated_at"] = current_datetime_iso()
+        json_db_save(db_filepath, db)
         return True
     return False
 
