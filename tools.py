@@ -3,9 +3,10 @@ import requests
 import json
 import re
 import datetime
-from configs import *
 from pathlib import Path
 from typing import Dict, Any
+
+from configs import *
 
 
 def tool(**kwargs):
@@ -37,14 +38,14 @@ def get_model(model_name):
 
 
 @tool()
-def format_input_as_messages(input):
+def format_str_as_message_obj(input):
     if isinstance(input, str):
         return [{"role": "user", "content": input}]
     return input
 
 
 @tool()
-def fetch_ai(model, input):
+def fetch_ai(model, input, response_format=None):
   """
   Fetches AI response using specified model and input.
   This function processes the input through different AI models based on their API type.
@@ -64,7 +65,8 @@ def fetch_ai(model, input):
   if model is None:
     return None
   if model['api_type'] == 'openai':
-    return call_api_of_type_openai_v2(model, input)
+    return call_api_of_type_openai_v3(model, input, response_format=response_format)
+    #return call_api_of_type_openai_v2(model, input)
     #return call_api_of_type_openai_official(model, input)
   if model['api_type'] == 'anthropic':
     return call_api_of_type_anthropic(model, input)
@@ -78,7 +80,7 @@ def call_api_of_type_openai_official(model, input):
   try:
     completion = client.chat.completions.create(
       model=model['name'],
-      messages=format_input_as_messages(input)
+      messages=format_str_as_message_obj(input)
     )
     log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     log_filepath = f"logs/ai_response_{log_timestamp}.log"    
@@ -98,7 +100,7 @@ def call_api_of_type_openai_official(model, input):
       }
     }    
     log_content = {
-      "input": format_input_as_messages(input),
+      "input": format_str_as_message_obj(input),
       "output": completion_dict
     }
     log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
@@ -162,7 +164,7 @@ def call_api_of_type_openai_v2(model, input):
 
   payload = {
     "model": model_data['name'],
-    "messages": format_input_as_messages(input),
+    "messages": format_str_as_message_obj(input),
     "temperature": 0.7
   }
 
@@ -173,7 +175,7 @@ def call_api_of_type_openai_v2(model, input):
       log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
       log_filepath = f"logs/ai_response_{log_timestamp}.log"
       log_content = {
-        "input": format_input_as_messages(input),
+        "input": format_str_as_message_obj(input),
         "output": result
       }
       log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
@@ -201,6 +203,70 @@ def call_api_of_type_openai_v2(model, input):
     print(f"Error calling model: {e}")
     return None
 
+# TESTING: call_api_of_type_openai_v3
+@tool()
+def call_api_of_type_openai_v3(model, input, response_format=None):
+  """
+  Calls OpenAI API with the given model and input.
+  This function sends a request to OpenAI's API, handles the response, logs the interaction,
+  and returns the processed result.
+  """
+  model_data = get_model(model['name'])
+  if model_data is None:
+    print("no model data")
+    return None
+  
+  headers = {
+    "Authorization": f"Bearer {model_data['api_key']}",
+    "Content-Type": "application/json"
+  }
+
+  payload = {
+    "model": model_data['name'],
+    "messages": format_str_as_message_obj(input),
+    "temperature": 0.7
+  }
+  # turn on JSON mode
+  if response_format == True:
+    payload["response_format"] = { "type": "json_object" }
+
+  try:
+    response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
+    if response.status_code == 200:
+      import inspect
+      result = response.json()
+      log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+      log_filepath = output_folder_path(f"logs/ai_response_{log_timestamp}.log")
+      log_content = {
+        "input": format_str_as_message_obj(input),
+        "output": result
+      }
+      log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
+      save_to_file(content=log_content, filepath=log_filepath)
+      output = {
+        "success": True,
+        "origin": inspect.currentframe().f_code.co_name,
+        "message": {
+          "content": result["choices"][0]["message"]["content"],
+          "role": result["choices"][0]["message"]["role"]
+        },        
+        "info": {
+          "model": result["model"],
+          "prompt_tokens": result["usage"]["prompt_tokens"],
+          "completion_tokens": result["usage"]["completion_tokens"],
+          "total_tokens": result["usage"]["total_tokens"]  
+        }
+      }
+      #return result["choices"][0]["message"]["content"]
+      return output
+    else:
+      print(f"Error: {response.status_code}")
+      print(response.text)
+      return None
+  except Exception as e:
+    print(f"Error calling model: {e}")
+    return None
+
 
 @tool()
 def call_api_of_type_anthropic(model, messages):
@@ -209,7 +275,7 @@ def call_api_of_type_anthropic(model, messages):
     print("no model data")
     return None
 
-  messages = format_input_as_messages(messages)
+  messages = format_str_as_message_obj(messages)
   
   headers = {
     "x-api-key": model_data['api_key'],

@@ -110,9 +110,14 @@ def testing20250326_3():
   jidla = ASSISTANTS_REGISTRY['assistant_universal_no_instructions']['function'](input=f"""{source} Jaka jidla jsou dnes v nabidce?""", model="gpt-4o-mini")
   
 
+def testing20250326_4():
+  message1="Alice and Bob are going to a science fair on Friday."
+  message2="Extract the event information in json format."
+  print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message1 + " " + message2, response_format=True))
+  print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message1 + " " + message2, response_format=True))
 
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250326_3()
+  testing20250326_4()
   
