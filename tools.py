@@ -817,6 +817,44 @@ def extract_urls_from_pages(urls: list, css_selector: str) -> list:
             
     return list(found_urls)
 
+@tool()
+def slugify(text: str) -> str:    
+    """
+    Convert text to URL-friendly slug.
+    Handles Czech characters and special characters according to best practices.
+    
+    Args:
+        text (str): Input text to be converted
+        
+    Returns:
+        str: Slugified string
+        
+    Examples:
+        >>> slugify("Příliš žluťoučký kůň")
+        'prilis-zlutoucky-kun'
+        >>> slugify("Hello @ World!")
+        'hello-world'
+        >>> slugify("Product (2023) -- Special Edition")
+        'product-2023-special-edition'
+    """
+    import re
+    from unidecode import unidecode
+    text = text.lower()
+    text = unidecode(text)
+    text = re.sub(r'[&@#%()[\]{}<>*+\\|/=~`\'"]', '-', text)
+    text = re.sub(r'[\s_]+', '-', text)
+    text = re.sub(r'[^a-z0-9-]', '', text)
+    text = re.sub(r'-+', '-', text)
+    text = text.strip('-')
+    return text
+
+
+@tool()
+def encode_image_to_base64(file_path):
+    import base64
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
+
 
 @tool()
 def commit_to_github(files: list, commit_message: str, repo_name: str, branch: str = "main") -> dict:

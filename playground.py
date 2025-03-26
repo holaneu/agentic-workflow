@@ -9,12 +9,12 @@ from tools import *
 # playground:
 # ----------------------
 
-if __name__ == "__main__":
-  # print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
+if __name__ == "__main__":    
 
-  # print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
-
-  # print('\ngemini:\n', fetch_ai("gemini-1.5-flash", "What is the capital of France?"))
+  def testing1():
+    print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
+    print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
+    print('\ngemini:\n', fetch_ai("gemini-2.0-flash", "What is the capital of France?"))
 
   # save_to_file(content=fetch_ai(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
 
@@ -96,7 +96,6 @@ def testing20250319():
     save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt")
 
-
 def testing20250321():
   dbfile = "outputs/test/databases/quick_notes.json"
   print(json_db_get_entry(db_filepath=dbfile, collection="notes", entry_id="SQ99Ts3BNT"))
@@ -104,4 +103,17 @@ def testing20250321():
   # print(json_db_add_entry(db_filepath=dbfile, collection="notes", entry={"content": "prdolka 1"}))
   print(json_db_delete_entry(db_filepath=dbfile, collection="notes", entry_id="0bx7MHfAU0"))
 
-testing20250321()
+def testing20250326():
+  message="Write hello in uppercase format."
+  print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message))
+  print('\n gpt-4o:\n', fetch_ai("gpt-4o", message))
+  print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message))
+  print('\n mistral-large-latest:\n', fetch_ai("mistral-small-latest", message))
+  print('\n gemini-2.0-flash:\n', fetch_ai("gemini-2.0-flash", message))
+  print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash", message))
+  print('\n deepseek-chat:\n', fetch_ai("deepseek-chat", message))
+
+# ------- run tests -------
+
+testing20250326()
+  
