@@ -7,28 +7,21 @@ from tools import *
 
 # ----------------------
 # playground:
-# ----------------------
+# ----------------------   
 
-if __name__ == "__main__":    
+def testing1():
+  print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
+  print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
+  print('\ngemini:\n', fetch_ai("gemini-2.0-flash", "What is the capital of France?"))
 
-  def testing1():
-    print('\nopenai:\n', fetch_ai("gpt-4o-mini", "What is the capital of France?"))
-    print('\nmistral:\n', fetch_ai("mistral-small-latest", "What is the capital of France?"))
-    print('\ngemini:\n', fetch_ai("gemini-2.0-flash", "What is the capital of France?"))
 
-  # save_to_file(content=fetch_ai(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
+def testing2():
+  save_to_file(content=fetch_ai(input="what is the capital of Czechia? Write only the name and nothing else", model="mistral-small-latest"), filepath="test/test.txt")
+  print(ASSISTANTS_REGISTRY['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
+  WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
 
-  # print(fetch_ai(input="write ahoj", model="mistral-small-latest"))    
 
-  # print(ASSISTANTS['assistant_translator_cs_en_yaml']['function'](input="namazat si chleba"))
-
-  # WORKFLOWS_REGISTRY['workflow_translation_cs_en_yaml']['function'](input="interrogate", model="gemini-2.0-flash-exp")
-
-  # print(fetch_ai(model="gemini-2.0-flash-exp", input="kedlubna"))
-
-  # print(fetch_ai(model="gpt-4o-mini", input="kedlubna"))
-
-  """
+def testing_registries():
   print("ASSISTANTS_REGISTRY")
   print(ASSISTANTS_REGISTRY)
 
@@ -41,19 +34,7 @@ if __name__ == "__main__":
     for name, tool in TOOLS_REGISTRY.items()
   }
   print(json.dumps(tools_without_functions, indent=2))
-  """
 
-  # print(call_api_newsapi(query="openai OR claude OR deepseek OR mistral", domains="techcrunch.com,thenextweb.com", lastDays=5))
-
-  # print(generate_id(10))
-
-  # print(current_datetime_iso())
-
-  # print(brave_search("openai"))
-
-  # print(download_web_sourcecode("https://martinvlach.cz/zivot-se-ma-zit-ne-vymyslet/"))
- 
-  # print(download_web_readable_content("https://martinvlach.cz/zivot-se-ma-zit-ne-vymyslet/", "body main h1, body main p, body main bloquete"))
 
 def testing20250317():
   base_url=os.getenv('MV_BASE_URL')
@@ -76,16 +57,17 @@ def testing20250317():
   print(" *** DONE *** \n\n")
 
 
-# docs/_posts/2025-02-03-workflows-ideas-2.md
-# docs/_posts/2025-02-03-workflows-ideas.md
-"""
-result = commit_to_github(
-    files=["docs/_posts/2025-02-03-workflows-ideas-2.md"],
-    commit_message="Add new blog post",
-    repo_name="holaneu/auto-posts",
-    branch="dev"
-)
-"""
+def testing_github():
+  # docs/_posts/2025-02-03-workflows-ideas-2.md
+  # docs/_posts/2025-02-03-workflows-ideas.md  
+  result = commit_to_github(
+      files=["docs/_posts/2025-02-03-workflows-ideas-2.md"],
+      commit_message="Add new blog post",
+      repo_name="holaneu/auto-posts",
+      branch="dev"
+  )
+  print(result)
+
 
 def testing20250319():
   from private.urls_list import urls
@@ -96,6 +78,7 @@ def testing20250319():
     save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt")
 
+
 def testing20250321():
   dbfile = "outputs/test/databases/quick_notes.json"
   print(json_db_get_entry(db_filepath=dbfile, collection="notes", entry_id="SQ99Ts3BNT"))
@@ -103,7 +86,8 @@ def testing20250321():
   # print(json_db_add_entry(db_filepath=dbfile, collection="notes", entry={"content": "prdolka 1"}))
   print(json_db_delete_entry(db_filepath=dbfile, collection="notes", entry_id="0bx7MHfAU0"))
 
-def testing20250326():
+
+def testing20250326_1():
   message="Write hello in uppercase format."
   print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message))
   print('\n gpt-4o:\n', fetch_ai("gpt-4o", message))
@@ -113,7 +97,22 @@ def testing20250326():
   print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash", message))
   print('\n deepseek-chat:\n', fetch_ai("deepseek-chat", message))
 
+
+def testing20250326_2():
+  print(generate_id(10))
+  print(current_datetime_iso())
+  print(brave_search("openai"))
+  print(download_news_newsapi(query="openai OR claude OR deepseek OR mistral", domains="techcrunch.com,thenextweb.com", lastDays=5))
+
+
+def testing20250326_3():
+  source = download_web_readable_content("https://www.menicka.cz/4550-bufacek-na-ruzku.html", "#menicka .content .text")
+  jidla = ASSISTANTS_REGISTRY['assistant_universal_no_instructions']['function'](input=f"""{source} Jaka jidla jsou dnes v nabidce?""", model="gpt-4o-mini")
+  
+
+
 # ------- run tests -------
 
-testing20250326()
+if __name__ == "__main__": 
+  testing20250326_3()
   
