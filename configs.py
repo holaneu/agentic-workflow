@@ -11,7 +11,7 @@ APP_SETTINGS = {
 }
 
 # Model Configurations 
-ai_models = [
+ai_chat_models = [
   {
     "name": "gpt-4o-mini",
     "base_url": "https://api.openai.com/v1/chat/completions",

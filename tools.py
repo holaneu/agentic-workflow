@@ -31,7 +31,7 @@ def get_model(model_name):
     dict or None: The model configuration dictionary if found, None otherwise. 
     The model dictionary contains model parameters and settings.
   """
-  for model in ai_models:
+  for model in ai_chat_models:
     if model['name'] == model_name:
       return model
   return None
@@ -205,7 +205,7 @@ def call_api_of_type_openai_v2(model, input):
 
 # TESTING: call_api_of_type_openai_v3
 @tool()
-def call_api_of_type_openai_v3(model, input, response_format=None):
+def call_api_of_type_openai_v3(model, input, structured_output=None, response_format=None):
   """
   Calls OpenAI API with the given model and input.
   This function sends a request to OpenAI's API, handles the response, logs the interaction,
@@ -227,8 +227,9 @@ def call_api_of_type_openai_v3(model, input, response_format=None):
     "temperature": 0.7
   }
   # turn on JSON mode
-  if response_format == True:
-    payload["response_format"] = { "type": "json_object" }
+  if structured_output == True:
+    if response_format == None:
+      payload["response_format"] = { "type": "json_object" }
 
   try:
     response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
@@ -917,9 +918,99 @@ def slugify(text: str) -> str:
 
 @tool()
 def encode_image_to_base64(file_path):
+    """Convert an image file to base64 string representation."""
+    
     import base64
     with open(file_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
+
+@tool()
+def extract_text_from_image_mistral_ocr(file_path):
+    """Extract text from an image using Mistral OCR API."""
+    if not file_path:
+        raise ValueError("File path is required")
+    """
+    import mimetypes
+    mime_type, _ = mimetypes.guess_type(file_path)
+    if not mime_type or not mime_type.startswith("image/"):
+        raise ValueError("File is not an image")
+    """
+    API_KEY = os.getenv("MISTRAL_API_KEY")
+    API_BASE_URL = "https://api.mistral.ai/v1/ocr"
+    MODEL = "mistral-ocr-latest"
+    ext = os.path.splitext(file_path)[1].lower()
+    mime_type = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.bmp': 'image/bmp',
+      '.webp': 'image/webp'
+    }.get(ext, 'image/jpeg')
+    base64_encoded = encode_image_to_base64(file_path)
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
+    }
+    payload = {
+        "model": MODEL,
+        "document": {
+          "type": "image_url",
+          "image_url": f"data:{mime_type};base64,{base64_encoded}"
+        }
+    }
+    response = requests.post(API_BASE_URL, headers=headers, json=payload)
+    response.raise_for_status()
+    result = response.json()
+    return result.get("pages", [])[0].get("markdown", "")
+
+
+@tool()
+def extract_text_from_image_openai(file_path, model=None):
+    """Extract text from an image using OpenAI ChatGPT API."""
+    if not file_path:
+        raise ValueError("File path is required")
+    API_KEY = os.getenv("OPENAI_API_KEY")
+    API_BASE_URL = "https://api.openai.com/v1/chat/completions"
+    if not model:
+        model = "gpt-4o-mini"
+    file_extention = os.path.splitext(file_path)[1].lower()
+    mime_type = {
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.png': 'image/png',
+      '.bmp': 'image/bmp',
+      '.webp': 'image/webp'
+    }.get(file_extention, 'image/jpeg')
+    base64_image = encode_image_to_base64(file_path)
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {API_KEY}"
+    }
+    payload = {
+        "model": model,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": "Extract and transcribe all text from this image. Output in the original language. Output only the text in pure plain text format without any explanations or comments."},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:{mime_type};base64,{base64_image}",
+                            "detail": "high"
+                        }
+                    }
+                ]
+            }
+        ],
+        "temperature": 0,
+        "max_tokens": 4096
+    }
+    response = requests.post(API_BASE_URL, headers=headers, json=payload)
+    response.raise_for_status()
+    result = response.json()
+    return result["choices"][0]["message"]["content"]
 
 
 @tool()

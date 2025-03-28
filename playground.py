@@ -115,9 +115,18 @@ def testing20250326_4():
   message2="Extract the event information in json format."
   print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message1 + " " + message2, response_format=True))
   print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message1 + " " + message2, response_format=True))
+  print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash-lite", message1 + " " + message2, response_format=True))
+
+
+def testing20250328():
+  print("ocr openai:")
+  print(extract_text_from_image_openai(file_path="private/ocr_test/tarotonline_02.png"))
+  #print("ocr mistral:")
+  #print(extract_text_from_image_mistral_ocr(file_path="private/ocr_test/tarotonline_02.png"))
+
 
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250326_4()
+  testing20250328()
   
