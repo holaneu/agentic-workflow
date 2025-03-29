@@ -1,40 +1,34 @@
 
 # -----------------------------------
-# TODO: Implement the following tools
+# TODOs / Feature ideas
 # -----------------------------------
-def search_web_brave(query):  
-  pass
 
-def search_web_google(query):
-  pass
+list of items (files, databases)
+  - page for listing
+  - page for item detail
 
-def commit_to_github():
-  pass
+structured output - json schema
+  - openai
+  - gemini
+  - mistral
 
-def fetch_from_github():
-  pass
+search_web_google(query)
 
-def download_content_from_url():
-  pass
+integrate github repo commit/push
+commit_to_github()
+fetch_from_github()
 
-def download_youtube_video_transcript():
-  pass
+download_youtube_video_transcript()
 
-def download_youtube_video():
-  pass
+download_youtube_video()
 
-def convert_markdown_to_html():
-  pass
+convert_markdown_to_html()
 
-def convert_html_to_markdown():
-  pass
+convert_html_to_markdown()
 
-def save_as_printable_html():
-  pass
+save_as_printable_html()
 
 I have an assistant "generate questions" – an idea for a workflow – after the step of generating questions on a certain topic, take these questions, possibly also attach the original prompt for generating the questions (or its summarized version) at the beginning for context, and ask for the generation of another X questions.
-
-create universal assistant - without any system/assistant instructions
 
 assistents
 generate file name
@@ -43,8 +37,6 @@ generate title
 convert yaml to json
 
 generate date in format YYYY-MM-DD
-
-generate id
 
 analyze text - extract action steps
 
@@ -60,17 +52,16 @@ generate py code
 
 execute py code
 
-synonyma
+synonyms
 
-UI - Pod nebo k sekci vystupu pridat tlacitko "Use as an input"
+UI - conversation message 
+  - button "Use as an input"
+  - button "Add to database"
+  - button "Save as file" (markdown)
 
 UI - file attachments (documents, text files, images, sound files?)
 
-integrate some OCR functions
-
 integrate openai whisper api
-
-integrate github repo commit/push
 
 integrate elevenLabs api
 
@@ -97,11 +88,6 @@ workflow: story_writing
   update story based on feedback from critical reader (assistant: writer)
   final output
 
-
-get / parse readable text content from HTML
-
-get HTML from URL
-
 classify input
 
 self-development
@@ -117,8 +103,6 @@ projects / tasks
 
 publish post to web / blog
 
-commit to git remote
-
 email
   get new email
   read single email
@@ -127,8 +111,3 @@ email
 news
   get news and filter topic
   read single news
-
-search internet
-
-func to convert image to base64 so it can be uploaded to ai models
-

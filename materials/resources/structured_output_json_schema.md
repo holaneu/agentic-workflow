@@ -1,4 +1,11 @@
 # Custom Structured Outputs
+
+**some resources:""
+- https://platform.openai.com/docs/guides/structured-outputs?api-mode=chat&lang=python&format=without-parse&example=structured-data#introduction
+- https://docs.mistral.ai/capabilities/structured-output/custom_structured_output/ 
+
+
+## Mistral
 Custom Structured Outputs allow you to ensure the model provides an answer in a very specific JSON format by supplying a clear JSON schema. This approach allows the model to consistently deliver responses with the correct typing and keywords.
 
 The request is structured to ensure that the response adheres to the specified custom JSON schema. The schema defines the structure of a Book object with name and authors properties.
