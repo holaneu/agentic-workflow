@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{% block title %}{% endblock %} - REXEEK</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+</head>
+<body>
+  {% include 'partials/sidebar.html' %}
+
+  <div class="container">
+    <nav>
+      <a href="/">Home</a>
+      <a href="{{ url_for('workflows') }}">Workflows</a>
+      <a href="{{ url_for('files') }}">Files</a>
+    </nav>
+    {% block content %}{% endblock %} 
+  </div>  
+    
+</body>
+</html>
+
