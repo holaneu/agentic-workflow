@@ -4,6 +4,8 @@
   <title>{% block title %}{% endblock %} - REXEEK</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <script src="{{ url_for('static', filename='js/shared.js') }}"></script>
+
+  {% block head %}{% endblock %}
 </head>
 <body>
   {% include 'partials/sidebar.html' %}
