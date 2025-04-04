@@ -1,6 +1,34 @@
-I have an assistant "generate questions" – an idea for a workflow – after the step of generating questions on a certain topic, take these questions, possibly also attach the original prompt for generating the questions (or its summarized version) at the beginning for context, and ask for the generation of another X questions.
 
-create universal assistant - without any system/assistant instructions
+# -----------------------------------
+# TODOs / Feature ideas
+# -----------------------------------
+
+list of items (files, databases)
+  - page for listing
+  - page for item detail
+
+structured output - json schema
+  - openai
+  - gemini
+  - mistral
+
+search_web_google(query)
+
+integrate github repo commit/push
+commit_to_github()
+fetch_from_github()
+
+download_youtube_video_transcript()
+
+download_youtube_video()
+
+convert_markdown_to_html()
+
+convert_html_to_markdown()
+
+save_as_printable_html()
+
+I have an assistant "generate questions" – an idea for a workflow – after the step of generating questions on a certain topic, take these questions, possibly also attach the original prompt for generating the questions (or its summarized version) at the beginning for context, and ask for the generation of another X questions.
 
 assistents
 generate file name
@@ -9,8 +37,6 @@ generate title
 convert yaml to json
 
 generate date in format YYYY-MM-DD
-
-generate id
 
 analyze text - extract action steps
 
@@ -26,17 +52,16 @@ generate py code
 
 execute py code
 
-synonyma
+synonyms
 
-UI - Pod nebo k sekci vystupu pridat tlacitko "Use as an input"
+UI - conversation message 
+  - button "Use as an input"
+  - button "Add to database"
+  - button "Save as file" (markdown)
 
 UI - file attachments (documents, text files, images, sound files?)
 
-integrate some OCR functions
-
 integrate openai whisper api
-
-integrate github repo commit/push
 
 integrate elevenLabs api
 
@@ -63,11 +88,6 @@ workflow: story_writing
   update story based on feedback from critical reader (assistant: writer)
   final output
 
-
-get / parse readable text content from HTML
-
-get HTML from URL
-
 classify input
 
 self-development
@@ -83,8 +103,6 @@ projects / tasks
 
 publish post to web / blog
 
-commit to git remote
-
 email
   get new email
   read single email
@@ -93,8 +111,3 @@ email
 news
   get news and filter topic
   read single news
-
-search internet
-
-func to convert image to base64 so it can be uploaded to ai models
-
