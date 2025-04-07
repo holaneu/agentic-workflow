@@ -27,6 +27,85 @@ body {
   padding: 20px;
 }
 
+nav a, nav a:active, nav a:visited {
+  color: #ccc;
+}
+
+/* Header */
+.header {
+  background-color: transparent;
+  padding: 0 1rem; /* Use padding for horizontal spacing, not height */
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  transition: background-color 0.3s ease, border-color 0.3s ease, font-color 0.3s ease;
+  border-bottom: 1px solid transparent;
+  height: 70px; /* Fixed height */
+  display: flex; /* Use flex to vertically center content within fixed height */
+  align-items: center;
+}
+
+.header .container { /* Ensure container takes full height */
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%; /* Ensure container uses full header width */
+}
+
+.header.scrolled {
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  flex-shrink: 0; /* Prevent logo from shrinking */
+}
+
+/* --- Header Content Colors & Visibility --- */
+
+/* Default state (scrolled or light hero) */
+.header .logo,
+.header .nav-main a {
+  color: #333;
+}
+.header .hamburger span {
+  background-color: #333; /* Dark hamburger lines */
+}
+
+/* State when header is transparent (NOT scrolled) */
+.header:not(.scrolled) .logo,
+.header:not(.scrolled) .nav-main a {
+  color: #fff; /* Light text */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6); /* Shadow for visibility */
+}
+/* Hamburger when transparent - ensure visibility */
+.header:not(.scrolled) .hamburger span {
+  background-color: #fff; /* Light hamburger lines */
+   /* Optional: Add a subtle border/shadow for extra contrast if needed */
+   /* border: 1px solid rgba(0, 0, 0, 0.2); */
+   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.nav-main {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto; /* Push nav to the right, before hamburger */
+  margin-right: 1.5rem; /* Space between nav and hamburger */
+}
+
+.nav-main a {
+  text-decoration: none;
+  white-space: nowrap; /* Prevent nav links wrapping */
+}
+
+
+
 h1 {
   color: var(--text-primary);
   font-size: 2.5rem;
@@ -199,4 +278,49 @@ button:hover {
 
 .sidebar-link:hover {
   color: #ffffff;
+}
+
+/* FILES */
+.file-list {
+  margin: 1em 0;
+}
+.item {
+  padding: 0.3em 0;
+}
+.item a {
+  text-decoration: none;
+  color: #ccc;
+}
+.item a:hover {
+  text-decoration: underline;
+}
+.folder a {
+  color: #ccc;
+  font-weight: bold;
+}
+
+.file-detail pre {
+  overflow: hidden;
+  text-wrap: auto;
+}
+
+.breadcrumbs {
+  margin: 1em 0;
+  padding: 0.5em;
+  /*background: #f5f5f5;*/
+  /*border-radius: 4px;*/
+  border-top: 1px dotted gray;
+  border-bottom: 1px dotted gray;
+}
+.breadcrumb-item {
+  text-decoration: none;
+  color: #8aacd6;
+}
+.breadcrumb-item.current {
+  color: #666;
+  font-weight: 500;
+}
+.breadcrumb-separator {
+  margin: 0 0.5em;
+  color: #666;
 }

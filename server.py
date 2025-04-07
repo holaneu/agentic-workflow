@@ -4,11 +4,12 @@ from assistants import ASSISTANTS_REGISTRY  # You'll need to create this
 import inspect
 from storage.manager import FileStorageManager
 import os
+from configs import APP_SETTINGS
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Configuration
-FILES_FOLDER = 'files'
+FILES_FOLDER = APP_SETTINGS['output_folder']
 file_manager = FileStorageManager(FILES_FOLDER)
 
 @app.template_filter('active_page')
