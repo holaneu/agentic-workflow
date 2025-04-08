@@ -113,9 +113,9 @@ def testing20250326_3():
 def testing20250326_4():
   message1="Alice and Bob are going to a science fair on Friday."
   message2="Extract the event information in json format."
-  print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message1 + " " + message2, response_format=True))
-  print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message1 + " " + message2, response_format=True))
-  print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash-lite", message1 + " " + message2, response_format=True))
+  print('\n gpt-4o-mini:\n', fetch_ai("gpt-4o-mini", message1 + " " + message2, structured_output=True))
+  print('\n mistral-small-latest:\n', fetch_ai("mistral-small-latest", message1 + " " + message2, structured_output=True))
+  print('\n gemini-2.0-flash-lite:\n', fetch_ai("gemini-2.0-flash-lite", message1 + " " + message2, structured_output=True))
 
 
 def testing20250328():
@@ -125,8 +125,38 @@ def testing20250328():
   #print(extract_text_from_image_mistral_ocr(file_path="private/ocr_test/tarotonline_02.png"))
 
 
+def testing20250408():
+  tools_without_functions = {
+    name: {k: v for k, v in tool.items() if k != 'function'}
+    for name, tool in TOOLS_REGISTRY.items()
+  }
+  def decide_tool_for_task(task):
+    instructions = f"""You are manager deciding which tools to use for a specific task.
+    Available tools are: 
+    {tools_without_functions}
+    Your task is to choose the most suitable tool for the task: {task}.
+    Use json format for output and include the following fields: tool, reason.
+    """
+    ai_response = fetch_ai("gemini-2.0-flash", instructions, structured_output=True)
+    return ai_response
+  
+  task1 = "Extract the event information from the text. Use json format for output and include the following fields: event, date, time, location."
+  task2 = "Translate the text from Czech to English."
+  task3 = "Generate a summary of the text."
+  task4 = "Generate id."  
+  print(decide_tool_for_task(task3))
+  print(decide_tool_for_task(task4))
+
+
+def testing20250408_2():
+  query = "obedove menu v blizkem okoli dluhonska 43 v prerove"
+  search_results = brave_search(query=query, count=5)
+  print(json.dumps(search_results, indent=2))
+  #for result in search_results:
+
+
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250328()
+  testing20250408_2()
   
