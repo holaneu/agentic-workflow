@@ -1,24 +1,4 @@
 {% if breadcrumbs or current_folder is none %}
-<style>
-  .breadcrumbs {
-      margin: 1em 0;
-      padding: 0.5em;
-      background: #f5f5f5;
-      border-radius: 4px;
-  }
-  .breadcrumb-item {
-      text-decoration: none;
-      color: #2c5282;
-  }
-  .breadcrumb-item.current {
-      color: #666;
-      font-weight: 500;
-  }
-  .breadcrumb-separator {
-      margin: 0 0.5em;
-      color: #666;
-  }
-</style>
 <div class="breadcrumbs">
     <a href="{{ url_for('files') }}" class="breadcrumb-item">Root</a>
     {% if breadcrumbs %}

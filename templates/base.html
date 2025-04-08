@@ -11,11 +11,22 @@
   {% include 'partials/sidebar.html' %}
 
   <div class="container">
-    <nav>
-      <a href="/">Home</a>
-      <a href="{{ url_for('workflows') }}">Workflows</a>
-      <a href="{{ url_for('files') }}">Files</a>
-    </nav>
+    
+
+    <header class="header" id="header">
+      <div class="container header-content">
+          <div class="logo">Rexeek</div>
+          <nav class="nav-main">
+            <a href="/">Home</a>
+            <a href="{{ url_for('workflows') }}">Workflows</a>
+            <a href="{{ url_for('files') }}">Files</a>
+          </nav>
+          <div class="hamburger" id="hamburger">
+              <span></span><span></span><span></span>
+          </div>
+      </div>
+    </header>
+
     {% block content %}{% endblock %} 
   </div>  
     

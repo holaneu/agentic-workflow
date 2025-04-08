@@ -17,7 +17,7 @@
       </div>
       {% endif %}
       
-      {% for item in items|sort(attribute='type', reverse=true)|sort(attribute='title') %}
+      {% for item in items %}
       <div class="item {{ item.type }}">
           {% if item.type == 'folder' %}
           <a href="{{ url_for('files', item_id=item.id) }}">📁 {{ item.title }}</a>
@@ -27,24 +27,5 @@
       </div>
       {% endfor %}
   </div>
-
-  <style>
-    .file-list {
-        margin: 1em 0;
-    }
-    .item {
-        padding: 0.3em 0;
-    }
-    .item a {
-        text-decoration: none;
-        color: #333;
-    }
-    .item a:hover {
-        text-decoration: underline;
-    }
-    .folder a {
-        color: #2c5282;
-    }
-  </style>
 
 {% endblock %}
