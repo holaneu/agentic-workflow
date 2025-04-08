@@ -45,7 +45,7 @@ def format_str_as_message_obj(input):
 
 
 @tool()
-def fetch_ai(model, input, response_format=None):
+def fetch_ai(model, input, structured_output=None, response_format=None):
   """
   Fetches AI response using specified model and input.
   This function processes the input through different AI models based on their API type.
@@ -65,11 +65,11 @@ def fetch_ai(model, input, response_format=None):
   if model is None:
     return None
   if model['api_type'] == 'openai':
-    return call_api_of_type_openai_v3(model, input, response_format=response_format)
+    return call_api_of_type_openai_v3(model, input, structured_output=structured_output, response_format=response_format)
     #return call_api_of_type_openai_v2(model, input)
     #return call_api_of_type_openai_official(model, input)
   if model['api_type'] == 'anthropic':
-    return call_api_of_type_anthropic(model, input)
+    return call_api_of_type_anthropic(model, input, structured_output=structured_output, response_format=response_format)
   return None
 
 
@@ -124,6 +124,7 @@ def call_api_of_type_openai_official(model, input):
     return None
 
 
+# REVIEW / REMOVE:
 @tool()
 def call_api_of_type_openai_v2(model, input):
   """
