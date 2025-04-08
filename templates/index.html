@@ -4,6 +4,71 @@
 
 {% block content %}
 
-<h1>REXEEK</h1>
+  <style>
+    header {
+      background-color: #2e2e2e;
+      color: #fff;
+      text-align: center;
+      padding: 60px 20px;
+      border-radius: 10px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+    }
+    header p {
+      font-size: 1.2em;
+      margin: 10px 0 20px;
+    }
+    .cta-button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 12px 24px;
+      text-decoration: none;
+      font-size: 1em;
+      border-radius: 5px;
+    }
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card {
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid gray;
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+  </style>
+
+  <header>
+    <h1>Automate Everything. Intelligently.</h1>
+    <p>Unleash the power of AI-driven workflows with tools, assistants, and memory working in sync.</p>
+    <a class="cta-button" href="/workflows">🚀 Start Building Workflows</a>
+  </header>
+
+  <section class="features">
+    <div class="card">
+      <h3>🧠 Smart Workflows</h3>
+      <p>Design custom workflows with branching logic, parallel tasks, and step-by-step automation.</p>
+    </div>
+    <div class="card">
+      <h3>🛠 Extensible Tools & AI Assistants</h3>
+      <p>Connect AI models, file utilities, or your own functions. Add new capabilities anytime.</p>
+    </div>
+    <div class="card">
+      <h3>💾 Persistent Memory & Integration</h3>
+      <p>Store data locally or sync with GitHub. Database and cloud support coming soon.</p>
+    </div>
+  </section>
+
+
+
 
 {% endblock %}

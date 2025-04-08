@@ -148,8 +148,15 @@ def testing20250408():
   print(decide_tool_for_task(task4))
 
 
+def testing20250408_2():
+  query = "obedove menu v blizkem okoli dluhonska 43 v prerove"
+  search_results = brave_search(query=query, count=5)
+  print(json.dumps(search_results, indent=2))
+  #for result in search_results:
+
+
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250408()
+  testing20250408_2()
   
