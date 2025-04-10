@@ -52,7 +52,7 @@ def testing20250317():
   for url in specific_urls[5:10]:
     parsed_content = download_web_readable_content(url, "body main h1, body main p, body main bloquete")
     url_edited = url.replace(base_url, "").replace("/", "")
-    save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
+    save_to_file(content=parsed_content, filepath=user_files_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt \n")
   print(" *** DONE *** \n\n")
 
@@ -75,7 +75,7 @@ def testing20250319():
   for url in urls[20:]:
     parsed_content = download_web_readable_content(url, "body main h1, body main p, body main bloquete")
     url_edited = url.replace(base_url, "").replace("/", "")
-    save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
+    save_to_file(content=parsed_content, filepath=user_files_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt")
 
 

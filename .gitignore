@@ -2,6 +2,8 @@
 # Private files
 private/
 test/
+test_user/
+test_files/
 
 # Local environment files
 venv/
@@ -9,6 +11,7 @@ venv/
 
 # Logs
 *.log
+logs/
 
 # Dependency files
 node_modules/

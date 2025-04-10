@@ -1,5 +1,5 @@
 from assistants import *
-from tools import save_to_file, save_to_external_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, output_folder_path, open_file
+from tools import save_to_file, save_to_external_file, download_news_newsapi, json_db_add_entry, current_datetime_iso, generate_id, user_files_folder_path, open_file
 from configs import APP_SETTINGS
 import json
 import os
@@ -25,7 +25,7 @@ def workflow_translation_cs_en_yaml(input, model=None):
     translation = assistant_translator_cs_en_yaml(input=input, model=model)
     if translation:
         translation = translation["message"]["content"].strip()
-        save_to_file(output_folder_path("slovnicek.txt"), translation + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("slovnicek.txt"), translation + "\n\n-----\n", prepend=True)
     return translation
 
 
@@ -37,7 +37,7 @@ def workflow_translation_cs_en(input, model=None):
     translation = assistant_translator_cs_en(input=input, model=model)
     if translation:
         translation = translation["message"]["content"].strip()
-        save_to_file(output_folder_path("translations.txt"), translation + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("translations.txt"), translation + "\n\n-----\n", prepend=True)
     return translation
 
 
@@ -49,7 +49,7 @@ def workflow_text_summarization(input, model=None):
     summarization = assistant_summarize_text(input=input, model=model)
     if summarization:
         summarization = summarization["message"]["content"].strip()
-        save_to_file(output_folder_path("summaries.txt"), summarization + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("summaries.txt"), summarization + "\n\n-----\n", prepend=True)
     return summarization
 
 
@@ -61,7 +61,7 @@ def workflow_situation_analysis(input, model=None):
     analysis = assistant_analyze_situation(input=input, model=model)
     if analysis:
         analysis = analysis["message"]["content"].strip()
-        save_to_file(output_folder_path("situace.txt"), analysis + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("situace.txt"), analysis + "\n\n-----\n", prepend=True)
     return analysis
 
 
@@ -73,7 +73,7 @@ def workflow_video_transcript_summarization(input, model=None):
     summarization = assistant_summarize_video_transcript(input=input, model=model)
     if summarization:
         summarization = summarization["message"]["content"].strip()
-        save_to_file(output_folder_path("video_transcript_summaries.txt"), summarization + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("video_transcript_summaries.txt"), summarization + "\n\n-----\n", prepend=True)
     return summarization
 
 
@@ -85,7 +85,7 @@ def workflow_explain_simply_lexicon(input, model=None):
     lexicon = assistant_explain_simply_lexicon(input=input, model=model)
     if lexicon:
         lexicon = lexicon["message"]["content"].strip()
-        save_to_file(output_folder_path("lexicon.txt"), lexicon + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("lexicon.txt"), lexicon + "\n\n-----\n", prepend=True)
     return lexicon
 
 
@@ -97,7 +97,7 @@ def workflow_create_assistatnt_prompt(input, model=None):
     assistant = assistant_assistant_instructions_creator(input=input, model=model)
     if assistant:
         assistant = assistant["message"]["content"].strip()
-        save_to_file(output_folder_path("assistants.txt"), assistant + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("assistants.txt"), assistant + "\n\n-----\n", prepend=True)
     return assistant
 
 
@@ -110,8 +110,8 @@ def workflow_take_quick_note(input, model=None):
     db_entry = {
         "content": note
     }
-    json_db_add_entry(db_filepath=output_folder_path("databases/quick_notes.json"), collection="notes", entry=db_entry)
-    save_to_file(output_folder_path("quick_notes.md"), note + "\n\n-----\n", prepend=True)
+    json_db_add_entry(db_filepath=user_files_folder_path("databases/quick_notes.json"), collection="notes", entry=db_entry)
+    save_to_file(user_files_folder_path("quick_notes.md"), note + "\n\n-----\n", prepend=True)
     #save_to_external_file("quick_notes_2025_H1_test.md", input.strip() + "\n\n-----\n", prepend=True)    
     return note
 
@@ -124,7 +124,7 @@ def workflow_write_story(input, model=None):
     story = assistant_writer(input=input, model=model)
     if story:
         story = story["message"]["content"].strip()
-        save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
     return story
 
 
@@ -134,7 +134,7 @@ def workflow_download_ai_news():
     news = download_news_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
     if news:
         formatted_news = json.dumps(news, indent=2)
-        save_to_file(output_folder_path("news.md"), formatted_news + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("news.md"), formatted_news + "\n\n-----\n", prepend=True)
         return formatted_news
     return "no output"
 
@@ -176,7 +176,7 @@ def workflow_quiz_from_text(input, model=None):
     if not questions or not questions.get("message", {}).get("content"):
         return "no questions generated"
     questions = questions.get("message", {}).get("content", "").strip()
-    save_to_file(output_folder_path("questions.txt"), questions + "\n\n-----\n", prepend=True)  
+    save_to_file(user_files_folder_path("questions.txt"), questions + "\n\n-----\n", prepend=True)  
     instructions_quiz_questions = f"""
     Zdrojový text:
     {source_text}
@@ -213,7 +213,7 @@ def workflow_quiz_from_text(input, model=None):
     if not quiz_questions:
         return "no quiz questions generated"
     quiz_questions = quiz_questions.get("message", {}).get("content", "").strip()
-    save_to_file(output_folder_path("quizzes.txt"), quiz_questions + "\n\n-----\n", prepend=True)
+    save_to_file(user_files_folder_path("quizzes.txt"), quiz_questions + "\n\n-----\n", prepend=True)
     return quiz_questions
     
 
@@ -237,7 +237,7 @@ def workflow_exctract_theses(input, model=None):
     if not theses or not theses.get("message", {}).get("content"):
         return "no tezis generated"
     theses = theses.get("message", {}).get("content", "").strip()
-    save_to_file(output_folder_path("theses.txt"), theses + "\n\n-----\n", prepend=True) 
+    save_to_file(user_files_folder_path("theses.txt"), theses + "\n\n-----\n", prepend=True) 
     return theses
 
 
@@ -249,7 +249,7 @@ def workflow_write_story_reviewed(input, model=None):
     story = assistant_writer(input=input, model=model).get("message", {}).get("content", "").strip()
     if not story:
         return "no story generated"
-    save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+    save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
     instructions_editor = f"""Jseš profesionální editor povídek, který posuzuje povídky a poskytuje zpětnou vazbu k jejich úpravě a zlepšení. Analyzuj vstupní text povídky a její slabé stránky a napiš jasné a stručné doporučení jak text upravit tak aby se odstranily tyto slabé stránky. Doporučení piš formou odrážek v neformátovaném plain text formátu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
 
     Vstupní text:
@@ -258,7 +258,7 @@ def workflow_write_story_reviewed(input, model=None):
     editor_feedback = assistant_universal_no_instructions(input=instructions_editor, model="gpt-4o").get("message", {}).get("content")
     if not editor_feedback:
         return "no editor's review generated"
-    save_to_file(output_folder_path("stories_reviewed.md"), story + "\n\n---\nFeedback:\n\n" + editor_feedback + "\n\n-----\n", prepend=True)
+    save_to_file(user_files_folder_path("stories_reviewed.md"), story + "\n\n---\nFeedback:\n\n" + editor_feedback + "\n\n-----\n", prepend=True)
     instructions_edit_story = f"""
     Jseš spisovatel povídek. Tvým úkolem je upravit původní text povídky přesně podle všech instrukcí k úpravě textu a vytvořit tak novou verzi povídky, ve které budou odstraněny slabé stránky a byla zlepšena kvalita textu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
 
@@ -269,7 +269,7 @@ def workflow_write_story_reviewed(input, model=None):
     {editor_feedback}
     """
     writer_edited_story = assistant_universal_no_instructions(input=instructions_edit_story, model="gpt-4o").get("message", {}).get("content")
-    save_to_file(output_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+    save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
     return writer_edited_story
 
 
@@ -328,7 +328,7 @@ def workflow_logbook_entry(input, model=None):
     if not ai_response or not ai_response.get("message", {}).get("content"):
         return "no response generated"
     entry = ai_response.get("message", {}).get("content", "").strip()
-    save_to_file(output_folder_path("logbook.md"), entry + "\n\n-----\n", prepend=True) 
+    save_to_file(user_files_folder_path("logbook.md"), entry + "\n\n-----\n", prepend=True) 
     return entry
 
 

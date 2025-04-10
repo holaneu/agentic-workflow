@@ -83,7 +83,7 @@ def call_api_of_type_openai_official(model, input):
       messages=format_str_as_message_obj(input)
     )
     log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_filepath = f"logs/ai_response_{log_timestamp}.log"    
+    log_filepath = user_files_folder_path(f"logs/ai_response_{log_timestamp}.log")
     # Convert completion object to dictionary for JSON serialization
     completion_dict = {
       "model": completion.model,
@@ -104,7 +104,7 @@ def call_api_of_type_openai_official(model, input):
       "output": completion_dict
     }
     log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-    save_to_file(content=log_content, filepath=output_folder_path(log_filepath))
+    save_to_file(content=log_content, filepath=log_filepath)
     output = {
         "status": "call_api_of_type_openai_official: Success",
         "message": {
@@ -180,7 +180,7 @@ def call_api_of_type_openai_v2(model, input):
         "output": result
       }
       log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-      save_to_file(content=log_content, filepath=output_folder_path(log_filepath))
+      save_to_file(content=log_content, filepath=user_files_folder_path(log_filepath))
       output = {
         "status": "call_api_of_type_openai_v2: Success",
         "message": {
@@ -238,7 +238,7 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
       import inspect
       result = response.json()
       log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-      log_filepath = output_folder_path(f"logs/ai_response_{log_timestamp}.log")
+      log_filepath = user_files_folder_path(f"logs/ai_response_{log_timestamp}.log")
       log_content = {
         "input": format_str_as_message_obj(input),
         "output": result
@@ -528,8 +528,8 @@ def current_datetime_iso():
 
 
 @tool()
-def output_folder_path(file_path: str) -> str:
-    return os.path.join(APP_SETTINGS["output_folder"], file_path) 
+def user_files_folder_path(file_path: str) -> str:
+    return os.path.join(APP_SETTINGS["user_files_folder_path"], file_path) 
 
 
 @tool(category='database')
