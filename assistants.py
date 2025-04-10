@@ -368,7 +368,7 @@ def assistant_generate_questions(input, model=None):
 
 
 @assistant()
-def assistant_universal_no_instructions(input, model=None):
+def assistant_universal_no_instructions(input, model=None, structured_output=None, response_format=None):
   """A universal AI assistant that processes input without any additional instruction (no system prompt)"""    
   if input is None or input.strip() == "":
     return "No input provided."
@@ -380,7 +380,7 @@ def assistant_universal_no_instructions(input, model=None):
   messages = [
     {"role": "user", "content": input}
   ]
-  response = fetch_ai(model, messages)
+  response = fetch_ai(model, messages, structured_output=structured_output, response_format=response_format)
   if config['verbose']:
     print(f"\n{__name__}:\n{response}\n")
   return response
@@ -406,7 +406,6 @@ def assistant_writer(input, model=None):
   - délka: maximálně 400 slov
   - titulek: na začátek příběhu vlož titulek "# Story: [název příběhu]"
   """
-
   messages = [
       {"role": "system", "content": instructions},
       {"role": "user", "content": input}
@@ -417,6 +416,28 @@ def assistant_writer(input, model=None):
   return response
 
 
+@assistant()
+def assistant_sarcastic_tech_editor(input, model=None):
+  """A sarcastic tech editor assistant that generates blog posts with ironic commentary."""
+  config = {
+      "default_model": "gpt-4o",
+      "verbose": True
+  }
+  model = model if model is not None else config['default_model']
+  instructions = f"""
+ Jseš redaktor a komentátor technických řešení. Tvým úkolem je napsat blog post na zadané téma. Tvůj styl se vyznačuje schopnosti vidět jednoduchá a funkční řešení a vtipně s dávkou ironie a sarkasmu komentovat postupy a řešení.
+ Téma: {input}
+  """
+  messages = [
+      {"role": "system", "content": instructions}
+  ]
+  response = fetch_ai(model, messages)
+  if config['verbose']:
+      print(__name__, response, sep="\n", end="\n\n")
+  return response
+
+
+# ----------------------
 # Registry of assistants - Extract all assistants dynamically
 import inspect
 ASSISTANTS_REGISTRY = {

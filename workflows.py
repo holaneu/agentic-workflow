@@ -273,7 +273,67 @@ def workflow_write_story_reviewed(input, model=None):
     return writer_edited_story
 
 
-# Extract all workflows dynamically
+@workflow()
+def workflow_logbook_entry(input, model=None):
+    """Writes a logbook entry."""
+    if input is None:
+        return "No input provided." 
+    source_text = input.strip()
+    instructions = f"""Na základě zadaného vstupu (může jít o větu, poznámku nebo kus kódu) vytvoř výstup ve strukturovaném JSON formátu se třemi klíčovými poli:
+    - "summary": Shrň, co daný úkol nebo kód dělá z pohledu uživatele (co mu to přinese nebo umožní). Pokud se jedná o kód, na začátek věty dej "Kód který, " (např. "Kód, který převede YAML na JSON").
+    - "procedure": V bodech popiš, co se děje krok za krokem. Každý bod formuluj jednoduše tak, aby mu rozuměl i netechnický čtenář. Za popis připoj do závorky krátké technické vysvětlení nebo zmínku o použitých funkcích, pokud to dává smysl. Pokud se jedná o kód, je preferované uvést do závorku funkci či metodu. Tam kde to dává smysl, např. pokud se jedná o kód, použij infinitivní slovesa bez podmětu (např. "Vybrat nejvhodnější výsledek ...", "Stáhnout obsah z ..." atd.). 
+    - "key_words": Vyjmenuj nejdůležitější použité technologie, knihovny, metody nebo klíčové pojmy. Vypisuj pouze ty, které vystihují účel a průběh úkolu nebo kódu.
+
+    Použij výstupní formát JSON, např.:
+    {{
+      "summary": "...",
+      "procedure": [
+        "...",
+        "..."
+      ],
+      "key_words": [
+        "...",
+        "..."
+      ]
+    }}
+
+    Vstup:
+    {source_text}
+
+    Priklady:
+    Priklad vstupu:
+    import json
+    data = {{"name": "Alice", "age": 30}}
+    json_string = json.dumps(data)
+    print(json_string)
+
+    Priklad vystupu:
+    {{
+      "summary": "Kód, který převede slovník s údaji o osobě na JSON řetězec a zobrazí ho.",
+      "procedure": [
+        "Načíst knihovnu pro práci s JSON formátem (import json).",
+        "Vytvořit slovník s informacemi o osobě, jako je jméno a věk (data = {{...}}).",
+        "Převést slovník na textový formát JSON (json.dumps()).",
+        "Vypsat výsledný JSON řetězec do konzole (print())."
+      ],
+      "key_words": [
+        "Python",
+        "json.dumps()",
+        "slovník",
+        "JSON"
+      ]
+    }}
+    """
+    ai_response = assistant_universal_no_instructions(input=instructions, model="gpt-4o", structured_output=True)
+    if not ai_response or not ai_response.get("message", {}).get("content"):
+        return "no response generated"
+    entry = ai_response.get("message", {}).get("content", "").strip()
+    save_to_file(output_folder_path("logbook.md"), entry + "\n\n-----\n", prepend=True) 
+    return entry
+
+
+# ----------------------
+# Registry of workflows - Extract all workflows dynamically
 import inspect
 WORKFLOWS_REGISTRY = {
     func.id: {

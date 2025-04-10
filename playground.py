@@ -148,15 +148,65 @@ def testing20250408():
   print(decide_tool_for_task(task4))
 
 
-def testing20250408_2():
+def testing20250409():
+  # step 1: search for restaurants in the area
   query = "obedove menu v blizkem okoli dluhonska 43 v prerove"
   search_results = brave_search(query=query, count=5)
-  print(json.dumps(search_results, indent=2))
-  #for result in search_results:
+  print(json.dumps(search_results, indent=2), end="\n\n")
+  instructions = f"""Your task is to choose the most suitable search result for the origin query: {query}.
+    Use json format for output and include the following fields: title, url.
+    Search results: 
+    {search_results}    
+    """
+  # step 2: choose the most suitable search result
+  selected_search_result = fetch_ai(model="gemini-2.0-flash", input=instructions, structured_output=True)
+  print(json.dumps(selected_search_result, indent=2), end="\n\n")
+  if not selected_search_result['success']:
+    return "somthing went wrong"
+  
+  try:
+    # step 3: parse the selected search result
+    parsed_result = json.loads(selected_search_result.get('message', {}).get('content', ''))
+    print(f"Parsed result: {parsed_result}", end="\n\n")
+    if parsed_result and len(parsed_result) > 0:
+      url = parsed_result[0].get('url', '')
+      print(f"Selected URL: {url}", end="\n\n")
+      if url:
+        # step 4: download the content of the selected search result
+        source = download_web_readable_content(url, "#menicka .content .text")
+        print(source, end="\n\n")
+    else:
+      print("No valid URL found in search results")
+  except json.JSONDecodeError as e:
+    print(f"Error parsing JSON: {e}")
+  # step 5: extract foods and their origin restaurants from the text
+  source_shorten = source[:len(source) // 4]
+  source_shorten = source_shorten[100:]
+  instructions2 = f"""Your task is to extract foods and its origin restaurants from a text.
+    Use json format for output and include the following fields: food, restaurant.
+    Text: {source_shorten}
+    """
+  extracted_foods = fetch_ai(model="gemini-2.0-flash", input=instructions2, structured_output=True)
+  print(f"extracted foods: {json.dumps(extracted_foods.get('message', {}).get('content', ''), indent=2)}", end="\n\n")
+  # step 6: clean the extracted foods data and print results
+  try:
+    import re
+    cleaned_text = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', extracted_foods.get('message', {}).get('content', ''))
+    json_data = json.loads(cleaned_text)    
+    print("extracted foods result:")
+    print(json.dumps(json_data, indent=2, ensure_ascii=False), end="\n\n")
+
+  except json.JSONDecodeError as e:
+      print(f"Error parsing JSON: {e}")
+      # Optional: Print the problematic part of the string
+      error_position = e.pos
+      context = cleaned_text[max(0, error_position-50):min(len(cleaned_text), error_position+50)]
+      print(f"\nContext around error (pos {error_position}):")
+      print(context)
 
 
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250408_2()
+  testing20250409()
   
