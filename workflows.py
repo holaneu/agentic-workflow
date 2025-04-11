@@ -4,6 +4,9 @@ from configs import APP_SETTINGS
 import json
 import os
 
+# ----------------------
+# Workflow decorator
+
 def workflow(**kwargs):
     """Decorator to define workflow functions with metadata."""
     def decorator(func):
@@ -15,6 +18,28 @@ def workflow(**kwargs):
         func.is_workflow = True
         return func
     return decorator
+
+
+# ----------------------
+# Workflow functions
+
+@workflow()
+def workflow_translation_cs_en_json(input, model=None):
+    """Translates text between Czech and English and outputs it in JSON format."""
+    if input is None or input.strip() == "":
+        return "No input provided." 
+    translation = assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True)
+    if not translation or not translation.get("message", {}).get("content"):
+        return "no translation generated"
+    translation = translation.get("message", {}).get("content", "").strip()
+    try:
+        translation_parsed = json.loads(translation)
+        if not isinstance(translation_parsed, dict):
+          return "invalid JSON structure"
+        save_to_file(user_files_folder_path("slovnicek.txt"), translation + "\n\n-----\n", prepend=True)
+        return translation
+    except json.JSONDecodeError:
+        return "failed to decode JSON"    
 
 
 @workflow()
