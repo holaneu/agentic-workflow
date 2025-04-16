@@ -263,7 +263,9 @@ def testing20250416_2():
   print(f"first_entry_id: {first_entry_id}", f"first_entry_content: {first_entry_content}", sep="\n", end="\n\n")
   updated_entry = json_db_update_entry(db_filepath=db_path, collection=db_collection_key, entry_id=first_entry_id, updates={"content": updated_entry_content})
   print(f"updated_entry: {updated_entry}", end="\n\n")
-
+  # get collection by collection key
+  collection = json_db_get_collection(db_filepath=db_path, collection=db_collection_key).get('data', []).get('entries', [])
+  print(f"collection: {collection}", end="\n\n")
 
 
 # ------- run tests -------

@@ -624,6 +624,41 @@ def json_db_get_entry(db_filepath: str, collection: str, entry_id: str) -> dict:
 
 
 @tool(category='database')
+def json_db_get_collection(db_filepath: str, collection: str) -> dict:
+    """
+    Retrieve all entries from a specified collection in the database.
+    
+    Args:
+        db_filepath (str): Path to the database file
+        collection (str): Name of the collection to retrieve
+        
+    Returns:
+        dict: Response object with success status and data
+        Example:
+            {
+                "success": True,
+                "message": "Collection retrieved successfully.",
+                "data": {
+                    "collection_name": "entries",
+                    "total_entries": 5,
+                    "entries": [...]
+                }
+            }
+            {"success": False, "message": "Database file not found."}
+            {"success": False, "message": "Collection not found."}
+    """
+    db = json_db_load(db_filepath)
+    if not db:
+        return {"success": False, "message": "Database file not found."}
+    
+    collection_data = db.get("collections", {}).get(collection)
+    if collection_data is None:
+        return {"success": False, "message": "Collection not found."}
+        
+    return {"success": True, "message": "Collection retrieved successfully.", "data": {"collection_name": collection, "total_entries": len(collection_data), "entries": collection_data}}
+
+
+@tool(category='database')
 def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
   """
   Add a new entry to a collection in the JSON database.
