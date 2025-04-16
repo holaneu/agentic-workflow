@@ -325,8 +325,8 @@ def assistant_generate_random_poem(model=None):
     model = model if model is not None else config['default_model']
     instructions = """Create a poem, choose any theme you want. The poem should be original, creative, and evoke emotions related to the theme. 
     Use descriptive language, metaphors, and imagery to convey the essence of the theme effectively. 
-    The poem should be structured with a coherent flow and rhythm that enhances the overall impact of the piece."""
-
+    The poem should be structured with a coherent flow and rhythm that enhances the overall impact of the piece.
+    """
     messages = [
         {"role": "system", "content": instructions}
     ]

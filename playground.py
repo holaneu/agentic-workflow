@@ -162,8 +162,7 @@ def testing20250409():
   selected_search_result = fetch_ai(model="gemini-2.0-flash", input=instructions, structured_output=True)
   print(json.dumps(selected_search_result, indent=2), end="\n\n")
   if not selected_search_result['success']:
-    return "somthing went wrong"
-  
+    return "somthing went wrong"  
   try:
     # step 3: parse the selected search result
     parsed_result = json.loads(selected_search_result.get('message', {}).get('content', ''))
@@ -195,7 +194,6 @@ def testing20250409():
     json_data = json.loads(cleaned_text)    
     print("extracted foods result:")
     print(json.dumps(json_data, indent=2, ensure_ascii=False), end="\n\n")
-
   except json.JSONDecodeError as e:
       print(f"Error parsing JSON: {e}")
       # Optional: Print the problematic part of the string
@@ -205,8 +203,71 @@ def testing20250409():
       print(context)
 
 
+def testing20250416():
+  """Testing new model gpt-4.1. for deciding which tool to use for a specific task."""
+  tools_without_functions = {
+    name: {k: v for k, v in tool.items() if k != 'function'}
+    for name, tool in TOOLS_REGISTRY.items()
+  }
+  def decide_tool_for_task(task):
+    instructions = f"""You are manager deciding which tools to use for a specific task.
+    Available tools are: 
+    {tools_without_functions}
+    Your task is to choose the most suitable tool for the task: {task}.
+    Use json format for output and include the following fields: tool, reason.
+    """
+    ai_response = fetch_ai(model="gpt-4.1", input=instructions, structured_output=True)
+    return ai_response
+  
+  task1 = "Extract the event information from the text. Use json format for output and include the following fields: event, date, time, location."
+  task2 = "Translate the text from Czech to English."
+  task3 = "Generate a summary of the text."
+  task4 = "Generate id."  
+  print('gpt-4.1 test', 'task3', decide_tool_for_task(task3), sep="\n", end="\n\n")
+  print('gpt-4.1 test', 'task4', decide_tool_for_task(task4), sep="\n", end="\n\n")
+
+
+def testing20250416_2():
+  db_path=user_files_folder_path("databases/test1.json")
+  # create new db without schema
+  new_db = json_db_create_db_without_schema(db_filepath=db_path)
+  print(f"db: {new_db}", end="\n\n")
+  # add new entry to the db
+  entry_content = {
+    "content": f"test test {current_datetime_iso()}"
+  }
+  db_entry = json_db_add_entry(db_filepath=db_path, collection="entries", entry=entry_content)
+  print(f"db_entry: {db_entry}", end="\n\n")
+  # receive entry_id of the newly added entry
+  if db_entry.get('success', False):
+    db_entry_id = db_entry["data"]["entry_id"]
+    print(f"db_entry_id: {db_entry_id}", end="\n\n")
+  # load the whole db
+  db = json_db_load(db_filepath=db_path)
+  print(f"db: {db}", end="\n\n")  
+  # get first collection
+  db_collection_key = next(iter(db.get('collections', {}).keys()), None)
+  print(f"db_collection_name: {db_collection_key}", end="\n\n")
+  #db_collection = next(iter(db.get('collections', {}).values()), {})
+  db_collection_value = db.get('collections', {}).get(db_collection_key, [])
+  print(f"db_collection: {db_collection_value}", end="\n\n")
+  # delete the last entry from the db
+  last_entry_id = db_collection_value[-1].get('id', None)
+  print(f"last_entry_id: {last_entry_id}", end="\n\n")
+  removed_entry = json_db_delete_entry(db_filepath=db_path, collection=db_collection_key, entry_id=last_entry_id)
+  print(f"removed_entry: {removed_entry}", end="\n\n")
+  # update the first entry
+  first_entry_id = db_collection_value[0].get('id', None)
+  first_entry_content = db_collection_value[0].get('content', None)
+  updated_entry_content = first_entry_content + " UPDATED"
+  print(f"first_entry_id: {first_entry_id}", f"first_entry_content: {first_entry_content}", sep="\n", end="\n\n")
+  updated_entry = json_db_update_entry(db_filepath=db_path, collection=db_collection_key, entry_id=first_entry_id, updates={"content": updated_entry_content})
+  print(f"updated_entry: {updated_entry}", end="\n\n")
+
+
+
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250409()
+  testing20250416_2()
   

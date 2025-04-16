@@ -17,14 +17,28 @@ APP_SETTINGS = {
 # Model Configurations 
 ai_chat_models = [
   {
-    "name": "gpt-4o-mini",
+    "name": "gpt-4.1",
     "base_url": "https://api.openai.com/v1/chat/completions",
     "api_key": os.getenv('OPENAI_API_KEY'),
     "api_type": "openai",
     "provider": "openai"
   },
   {
+    "name": "gpt-4.1-mini",
+    "base_url": "https://api.openai.com/v1/chat/completions",
+    "api_key": os.getenv('OPENAI_API_KEY'),
+    "api_type": "openai",
+    "provider": "openai"
+  },  
+  {
     "name": "gpt-4o",
+    "base_url": "https://api.openai.com/v1/chat/completions",
+    "api_key": os.getenv('OPENAI_API_KEY'),
+    "api_type": "openai",
+    "provider": "openai"
+  },
+  {
+    "name": "gpt-4o-mini",
     "base_url": "https://api.openai.com/v1/chat/completions",
     "api_key": os.getenv('OPENAI_API_KEY'),
     "api_type": "openai",
@@ -55,14 +69,14 @@ ai_chat_models = [
     "name": "gemini-2.0-flash",
     "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", 
     "api_key": os.getenv('GEMINI_API_KEY'),
-    "api_type": "openai", #gemini
+    "api_type": "openai",
     "provider": "google"
   },
   {
     "name": "gemini-2.0-flash-lite",
     "base_url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", 
     "api_key": os.getenv('GEMINI_API_KEY'),
-    "api_type": "openai", #gemini
+    "api_type": "openai",
     "provider": "google"
   },
   {

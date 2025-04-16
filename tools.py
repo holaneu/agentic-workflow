@@ -124,93 +124,40 @@ def call_api_of_type_openai_official(model, input):
     return None
 
 
-# REVIEW / REMOVE:
-@tool()
-def call_api_of_type_openai_v2(model, input):
-  """
-  Calls OpenAI API v2 with the given model and input.
-  This function sends a request to OpenAI's API, handles the response, logs the interaction,
-  and returns the processed result.
-  Args:
-    model (dict): Dictionary containing model information including 'name'
-    input (str/dict): Input text or formatted input to be sent to the API
-  Returns:
-    dict: A dictionary containing:
-      - status (str): Status message
-      - message (dict): 
-        - content (str): The generated content
-        - role (str): Role of the message
-      - info (dict):
-        - model (str): Model name used
-        - prompt_tokens (int): Number of tokens in prompt
-        - completion_tokens (int): Number of tokens in completion
-        - total_tokens (int): Total tokens used
-    None: If the API call fails or encounters an error
-  Raises:
-    Exception: If there's an error during the API call
-  Note:
-    - Requires valid model data with api_key and base_url
-    - Logs all interactions in 'logs' directory with timestamp
-    - Uses temperature of 0.7 for generation
-  """
-  model_data = get_model(model['name'])
-  if model_data is None:
-    print("no model data")
-    return None
-  
-  headers = {
-    "Authorization": f"Bearer {model_data['api_key']}",
-    "Content-Type": "application/json"
-  }
-
-  payload = {
-    "model": model_data['name'],
-    "messages": format_str_as_message_obj(input),
-    "temperature": 0.7
-  }
-
-  try:
-    response = requests.post(model_data['base_url'], headers=headers, data=json.dumps(payload))
-    if response.status_code == 200:
-      result = response.json()
-      log_timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-      log_filepath = f"logs/ai_response_{log_timestamp}.log"
-      log_content = {
-        "input": format_str_as_message_obj(input),
-        "output": result
-      }
-      log_content = json.dumps(log_content, ensure_ascii=False, indent=2)
-      save_to_file(content=log_content, filepath=user_files_folder_path(log_filepath))
-      output = {
-        "status": "call_api_of_type_openai_v2: Success",
-        "message": {
-          "content": result["choices"][0]["message"]["content"],
-          "role": result["choices"][0]["message"]["role"]
-        },        
-        "info": {
-          "model": result["model"],
-          "prompt_tokens": result["usage"]["prompt_tokens"],
-          "completion_tokens": result["usage"]["completion_tokens"],
-          "total_tokens": result["usage"]["total_tokens"]
-        }
-      }
-      #return result["choices"][0]["message"]["content"]
-      return output
-    else:
-      print(f"Error: {response.status_code}")
-      print(response.text)
-      return None
-  except Exception as e:
-    print(f"Error calling model: {e}")
-    return None
-
 # TESTING: call_api_of_type_openai_v3
 @tool()
-def call_api_of_type_openai_v3(model, input, structured_output=None, response_format=None):
+def call_api_of_type_openai_v3(model, input, structured_output=None, response_format=None, temperature=None):
   """
   Calls OpenAI API with the given model and input.
   This function sends a request to OpenAI's API, handles the response, logs the interaction,
   and returns the processed result.
+  Args:
+    model (dict): Dictionary containing model configuration including 'name' key
+    input (str or list): Input text or list of message objects to send to the API
+    structured_output (bool, optional): If True, forces JSON output format. Defaults to None
+    response_format (dict, optional): Custom response format configuration. If None and structured_output is True, defaults to JSON object format. Defaults to None
+    temperature (float, optional): Controls randomness in the model's output. Values range from 0 to 2,
+    where 0 is more focused/deterministic and higher values produce more random outputs. Defaults to 0.7 if not specified.
+  Returns:
+    dict or None: If successful, returns a dictionary containing:
+      - success (bool): True if API call succeeded
+      - origin (str): Name of the calling function
+      - message (dict): Response message containing:
+        - content (str): The generated text response
+        - role (str): Role of the message (e.g. "assistant")
+      - info (dict): Additional information including:
+        - model (str): Name of the model used
+        - prompt_tokens (int): Number of tokens in the prompt
+        - completion_tokens (int): Number of tokens in the completion
+        - total_tokens (int): Total tokens used
+    Returns None if API call fails or encounters an error
+  Raises:
+    Exception: Catches and logs any exceptions during API call
+  Note:
+    - Requires valid model configuration with API key and base URL
+    - Automatically logs all interactions to a timestamped file
+    - Supports JSON mode for structured outputs
+    - Uses a default temperature of 0.7 for generation
   """
   model_data = get_model(model['name'])
   if model_data is None:
@@ -225,7 +172,7 @@ def call_api_of_type_openai_v3(model, input, structured_output=None, response_fo
   payload = {
     "model": model_data['name'],
     "messages": format_str_as_message_obj(input),
-    "temperature": 0.7
+    "temperature": temperature if temperature is not None else 0.7
   }
   # turn on JSON mode
   if structured_output == True:
@@ -536,6 +483,7 @@ def user_files_folder_path(file_path: str) -> str:
 def json_db_load(db_filepath: str) -> dict:
     """
     Load JSON database from a file.
+    
     Args:
         filepath (str): Path to the JSON database file
     Returns:
@@ -549,15 +497,111 @@ def json_db_load(db_filepath: str) -> dict:
 
 
 @tool(category='database')
-def json_db_save(db_filepath: str, data: dict) -> None:
-    """
-    Save JSON database to a file.
-    Args:
-        filepath (str): Path to save the JSON database
-        data (dict): Data to save
-    """
+def json_db_save(db_filepath: str, data: dict) -> dict:
+  """
+  Save JSON database to a file.
+  
+  Args:
+    db_filepath (str): Path to save the JSON database
+    data (dict): Data to save
+    
+  Returns:
+    dict: Response object with success status and message
+    Example:
+      {"success": True, "message": "Database saved successfully."}
+      {"success": False, "message": "Error saving database file: error"}
+  """
+  try:
     with open(db_filepath, "w", encoding="utf-8") as file:
-        json.dump(data, file, indent=2, ensure_ascii=False)
+      json.dump(data, file, indent=2, ensure_ascii=False)
+    return {
+      "success": True,
+      "message": "Database saved successfully."
+    }
+  except Exception as e:
+    return {
+      "success": False,
+      "message": f"Error saving database file: {str(e)}"
+    }
+
+
+@tool(category='database')
+def json_db_create_db_without_schema(
+   db_filepath: str, 
+   title: str = None, 
+   description: str = None, 
+   initial_collections: list[str] = None,
+   owner: str = None, 
+   tags: list[str] = None   
+   ) -> dict:
+    """
+    Create a new JSON database with basic structure and info, without schema validation.
+
+    Args:
+      db_filepath (str): Path to save the new database file
+      title (str): Title of the database (optional, defaults to filename)
+      description (str): Description of the database (optional)
+      initial_collections (list): Names of collections to include (optional) 
+      owner (str): Owner name (optional)
+      tags (list): List of tags (optional)
+
+    Returns:
+      dict: Response object with success status and message
+      Example:
+        {
+          "success": True, 
+          "message": "Database file created successfully.",
+          "data": {
+            "db_id": "abc123", 
+            "db_path": "path/to/db.json"
+          }
+        }
+        {"success": False, "message": "Database file already exists."}
+    """
+    # Check if file already exists
+    if os.path.exists(db_filepath):
+        return {
+          "success": False,
+          "message": "Database file already exists.",
+          "error": {
+            "type": "FileExistsError",
+            "details": f"File '{db_filepath}' already exists."
+          }
+        }
+    
+    db_id = generate_id()
+    title = title or db_filepath.split("/")[-1].split(".")[0]
+    created_at = current_datetime_iso()
+    description = description or ""
+    initial_collections = initial_collections or []
+    db_info = {
+        "id": db_id,
+        "title": title, 
+        "description": description,       
+        "created_at": created_at,
+        "updated_at": created_at,        
+    }
+    if owner:
+        db_info["owner"] = owner
+    if tags:
+        db_info["tags"] = tags
+
+    collections = {name: [] for name in initial_collections}
+
+    db = {
+        "db_info": db_info,
+        "collections": collections
+    }
+
+    json_db_save(db_filepath, db)
+    return {
+      "success": True,
+      "message": "Database file created successfully.",
+      "data": {
+        "db_id": db_id,
+        "db_path": db_filepath
+      }
+    }
 
 
 @tool(category='database')
@@ -583,14 +627,27 @@ def json_db_get_entry(db_filepath: str, collection: str, entry_id: str) -> dict:
 def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
   """
   Add a new entry to a collection in the JSON database.
+
   Args:
-    db_file_path (str): Database file path
-    collection (str): Name of the collection
+    db_filepath (str): Path to the database file
+    collection (str): Collection name 
     entry (dict): Entry data to add
+
   Returns:
-    str: ID of the added entry
+    dict: Response object with success status and message
+    Example:
+      {"success": True, "message": "Entry added successfully.", "data": {"entry_id": "abc123"}}
+      {"success": False, "message": "Database file not found."}
+      {"success": False, "message": "Collection name is required."}
+      {"success": False, "message": "Entry data is required."}
   """
   db_data = json_db_load(db_filepath)
+  if not db_data:
+    return {"success": False, "message": "Database file not found."}
+  if not collection:
+    return {"success": False, "message": "Collection name (str) is required."}
+  if not entry:
+    return {"success": False, "message": "Entry (dict) is required."}
   if "collections" not in db_data:
     db_data["collections"] = {}        
   if collection not in db_data["collections"]:
@@ -617,22 +674,28 @@ def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
   if "db_info" in db_data:
     db_data["db_info"]["updated_at"] = entry_datetime
   json_db_save(db_filepath, db_data)    
-  return entry_id
+  return {"success": True, "message": "Entry added successfully.", "data": {"entry_id": entry_id}}
 
 
 @tool(category='database')
 def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updates: dict) -> bool:
     """
-    Update an existing entry by ID.
+    Update an existing entry by ID in the JSON database.
     Args:
-        filepath (str): Database file path
-        collection (str): Collection name
-        entry_id (str): Entry ID to update
-        updates (dict): New data to update
+      db_filepath (str): Path to the database file
+      collection (str): Collection name
+      entry_id (str): ID of the entry to update
+      updates (dict): Dictionary containing the fields and values to update
     Returns:
-        bool: True if updated successfully
+      dict: Response object with success status and message
+      Example:
+        {"success": True, "message": "Entry updated successfully.", "data": {"entry_id": "abc123"}}
+        {"success": False, "message": "Database file not found."}
+        {"success": False, "message": "Entry not found."}
     """
     db = json_db_load(db_filepath)
+    if not db:
+       return {"success": False, "message": "Database file not found."}
     for entry in db.get("collections", {}).get(collection, []):
         if entry["id"] == entry_id:
             entry_datetime = current_datetime_iso()
@@ -653,8 +716,8 @@ def json_db_update_entry(db_filepath: str, collection: str, entry_id: str, updat
             if "db_info" in db:
               db["db_info"]["updated_at"] = entry_datetime
             json_db_save(db_filepath, db)
-            return True
-    return False
+            return {"success": True, "message": "Entry updated successfully.", "data": {"entry_id": entry_id}}
+    return {"success": False, "message": "Entry not found."}
 
 
 @tool(category='database')
@@ -662,11 +725,15 @@ def json_db_delete_entry(db_filepath: str, collection: str, entry_id: str) -> bo
     """
     Delete an entry by ID from the database.
     Args:
-        filepath (str): Database file path
-        collection (str): Collection name
-        entry_id (str): Entry ID to delete
+      db_filepath (str): Path to the database file
+      collection (str): Collection name 
+      entry_id (str): ID of the entry to delete
     Returns:
-        bool: True if deleted successfully
+      dict: Response object with success status and message
+      Example:
+        {"success": True, "message": "Entry deleted successfully.", "data": {"entry_id": "abc123"}}
+        {"success": False, "message": "Database file not found."}
+        {"success": False, "message": "Entry not found."}
     """
     db = json_db_load(db_filepath)
     db_collection = db.get("collections", {}).get(collection, [])
@@ -676,8 +743,8 @@ def json_db_delete_entry(db_filepath: str, collection: str, entry_id: str) -> bo
         if "db_info" in db:
             db["db_info"]["updated_at"] = current_datetime_iso()
         json_db_save(db_filepath, db)
-        return True
-    return False
+        return {"success": True, "message": "Entry deleted successfully.", "data": {"entry_id": entry_id}}
+    return {"success": False, "message": "Entry not found."}
 
 
 def brave_search(query: str, count: int = 5) -> Dict[str, Any]:

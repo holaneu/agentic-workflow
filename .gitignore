@@ -1,6 +1,8 @@
 
 # Private files
 private/
+/users/*
+!/users/.gitkeep
 test/
 test_user/
 test_files/
