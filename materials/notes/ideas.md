@@ -3,6 +3,10 @@
 # TODOs / Feature ideas
 # -----------------------------------
 
+file storage file structure
+  - user/<user id>/files/<file path>
+  - for testing purpose the user id will be some fixed string (e.g. vlada), later, once the use login system will be implemented, the user id will be id of the user from user DB (some kind of hash or dynamicaly generated id etc.).
+
 list of items (files, databases)
   - page for listing
   - page for item detail

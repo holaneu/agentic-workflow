@@ -9,7 +9,7 @@ from configs import APP_SETTINGS
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Configuration
-FILES_FOLDER = APP_SETTINGS['output_folder']
+FILES_FOLDER = APP_SETTINGS['user_files_folder_path']
 file_manager = FileStorageManager(FILES_FOLDER)
 
 @app.template_filter('active_page')
