@@ -28,18 +28,20 @@ def workflow_translation_cs_en_json(input, model=None):
     """Translates text between Czech and English and outputs it in JSON format."""
     if input is None or input.strip() == "":
         return "No input provided." 
-    translation = assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True)
-    if not translation or not translation.get("message", {}).get("content"):
+    translation_str = assistant_translator_cs_en_json(input=input.strip(), model=model, structured_output=True)
+    if not translation_str or not translation_str.get("message", {}).get("content"):
         return "no translation generated"
-    translation = translation.get("message", {}).get("content", "").strip()
+    translation_str = translation_str.get("message", {}).get("content", "").strip()
     try:
-        translation_parsed = json.loads(translation)
+        translation_parsed = json.loads(translation_str)
         if not isinstance(translation_parsed, dict):
           return "invalid JSON structure"
-        save_to_file(user_files_folder_path("slovnicek.txt"), translation + "\n\n-----\n", prepend=True)
-        return translation
+        translation_str = json.dumps(translation_parsed, indent=2, ensure_ascii=False)
+        save_to_file(user_files_folder_path("vocabulary.txt"), translation_str + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_files_folder_path("databases/vocabulary.json"), collection="entries", entry=translation_parsed, add_createdat=True)
+        return translation_str
     except json.JSONDecodeError:
-        return "failed to decode JSON"    
+        return "failed to decode JSON"
 
 
 @workflow()
@@ -50,7 +52,7 @@ def workflow_translation_cs_en_yaml(input, model=None):
     translation = assistant_translator_cs_en_yaml(input=input, model=model)
     if translation:
         translation = translation["message"]["content"].strip()
-        save_to_file(user_files_folder_path("slovnicek.txt"), translation + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("vocabulary_yaml.txt"), translation + "\n\n-----\n", prepend=True)
     return translation
 
 
@@ -110,7 +112,7 @@ def workflow_explain_simply_lexicon(input, model=None):
     lexicon = assistant_explain_simply_lexicon(input=input, model=model)
     if lexicon:
         lexicon = lexicon["message"]["content"].strip()
-        save_to_file(user_files_folder_path("lexicon.txt"), lexicon + "\n\n-----\n", prepend=True)
+        save_to_file(user_files_folder_path("lexicon.txt"), lexicon + "\n\n-----\n", prepend=True)        
     return lexicon
 
 
@@ -150,6 +152,7 @@ def workflow_write_story(input, model=None):
     if story:
         story = story["message"]["content"].strip()
         save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_files_folder_path("databases/stories.json"), collection="entries", entry={"input": input.strip(), "content": story}, add_createdat=True)
     return story
 
 
@@ -353,8 +356,24 @@ def workflow_logbook_entry(input, model=None):
     if not ai_response or not ai_response.get("message", {}).get("content"):
         return "no response generated"
     entry = ai_response.get("message", {}).get("content", "").strip()
-    save_to_file(user_files_folder_path("logbook.md"), entry + "\n\n-----\n", prepend=True) 
-    return entry
+    try:
+        entry_parsed = json.loads(entry)
+        if not isinstance(entry_parsed, dict):
+            return "invalid JSON structure"            
+        # Save pretty-printed JSON to file
+        entry_str = json.dumps(entry_parsed, indent=2, ensure_ascii=False)
+        save_to_file(user_files_folder_path("logbook.md"), entry_str + "\n\n-----\n", prepend=True)        
+        # Save parsed dictionary directly to database
+        json_db_add_entry(
+            db_filepath=user_files_folder_path("databases/logbook.json"), 
+            collection="entries", 
+            entry=entry_parsed,  # Use the parsed dict instead of JSON string
+            add_createdat=True
+        )        
+        return entry_str
+    except json.JSONDecodeError:
+        return "failed to decode JSON"
+    
 
 
 # ----------------------

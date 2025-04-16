@@ -266,6 +266,18 @@ def testing20250416_2():
   # get collection by collection key
   collection = json_db_get_collection(db_filepath=db_path, collection=db_collection_key).get('data', []).get('entries', [])
   print(f"collection: {collection}", end="\n\n")
+  
+  
+def testingCreateNewDbs():
+  # create new dbs
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/vocabulary.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/logbook.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/questions.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/lexicon.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/news.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/stories.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/situations.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/blog_posts.json"), initial_collections=["entries"])
 
 
 # ------- run tests -------

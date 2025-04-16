@@ -659,7 +659,7 @@ def json_db_get_collection(db_filepath: str, collection: str) -> dict:
 
 
 @tool(category='database')
-def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
+def json_db_add_entry(db_filepath: str, collection: str, entry: dict, add_createdat: bool = None, add_updatedat: bool = None) -> str:
   """
   Add a new entry to a collection in the JSON database.
 
@@ -667,6 +667,8 @@ def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
     db_filepath (str): Path to the database file
     collection (str): Collection name 
     entry (dict): Entry data to add
+    add_createdat (bool): If True, adds created_at timestamp to entry (optional)
+    add_updatedat (bool): If True, adds updated_at timestamp to entry (optional)
 
   Returns:
     dict: Response object with success status and message
@@ -704,6 +706,10 @@ def json_db_add_entry(db_filepath: str, collection: str, entry: dict) -> str:
 
   entry_id = entry.get("id", generate_id())
   entry["id"] = entry_id    
+  if add_createdat and "created_at" not in entry:
+    entry["created_at"] = entry_datetime
+  if add_updatedat and "updated_at" not in entry:
+    entry["updated_at"] = entry_datetime
   db_data["collections"][collection].insert(0, entry)
 
   if "db_info" in db_data:
