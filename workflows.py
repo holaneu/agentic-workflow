@@ -147,11 +147,14 @@ def workflow_take_quick_note(input, model=None):
 def workflow_download_ai_news():
     """Downloads and saves recent AI-related news articles."""
     news = download_news_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
-    if news:
-        formatted_news = json.dumps(news, indent=2)
-        save_to_file(user_files_folder_path("news.md"), formatted_news + "\n\n-----\n", prepend=True)
-        return formatted_news
-    return "no output"
+    if not news or not news.get("articles"):
+        return "no news found"
+    file_name = "news"
+    articles = news.get("articles", [])
+    for article in articles:
+        json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=article, add_createdat=False)
+        save_to_file(user_files_folder_path(f"{file_name}.md"), json.dumps(article, indent=2, ensure_ascii=False) + "\n\n-----\n", prepend=True)    
+    return json.dumps(articles, indent=2, ensure_ascii=False)
 
 
 @workflow()

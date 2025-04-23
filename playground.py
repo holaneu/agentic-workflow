@@ -280,7 +280,7 @@ def testingCreateNewDbs():
   json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/blog_posts.json"), initial_collections=["entries"])
 
 
-def testing20250422():
+def testingConvertTxtToDb_logbook():
   #json_db_delete_entry(db_filepath=user_files_folder_path("databases/logbook.json"), collection="entries", entry_id="JDmKAZcnry")
   data_file = open_file(filepath=user_files_folder_path("logbook.md"))
   data_parsed = [json.loads(d.strip()) for d in data_file.split("-----") if d.strip()]
@@ -289,7 +289,7 @@ def testing20250422():
     json_db_add_entry(db_filepath=user_files_folder_path("databases/logbook.json"), collection="entries", entry=item, add_createdat=True)
 
 
-def testingConvertTxtToDb20250423():
+def testingConvertTxtToDb_vocabulary():
   file_name = "vocabulary"
   data_file = open_file(filepath=user_files_folder_path(f"{file_name}.md"))
   data_parsed = [json.loads(d.strip()) for d in data_file.split("-----") if d.strip()]
@@ -301,7 +301,7 @@ def testingConvertTxtToDb20250423():
     json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=item, add_createdat=True)
 
 
-def testingConvertTxtToDb_2():
+def testingConvertTxtToDb_stories():
   file_name = "stories"
   data_item_format = "text"
   data_file = open_file(filepath=user_files_folder_path(f"{file_name}.md"))
@@ -320,10 +320,36 @@ def testingConvertTxtToDb_2():
     json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=item, add_createdat=True)
   
 
+def testingConvertTxtToDb_news():
+  file_name = "news"
+  data_item_format = "json"
+  data_file = open_file(filepath=user_files_folder_path(f"{file_name}.md"))
+  data_parsed = [d.strip() for d in data_file.split("-----") if d.strip()]
+  start_index = 0
+  end_index = len(data_parsed)
+  data_fragment = data_parsed[start_index:end_index]
+  news_all = []
+  for item in reversed(data_fragment):
+    if data_item_format == "json":
+      item = json.loads(item.strip())
+    elif data_item_format == "text":
+      item = {
+        "content": item.strip()
+      }
+    articles = item.get("articles", [])
+    news_all.extend(articles)
+    #print(f"{json.dumps(articles, indent=2, ensure_ascii=False)}", end="\n\n")
+    #json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=item, add_createdat=True)
+  #print(f"{json.dumps(news_all, indent=2, ensure_ascii=False)}", end="\n\n")
+  print(len(news_all))
+  news_all_text_version = "\n\n-----\n\n".join([json.dumps(article, indent=2, ensure_ascii=False) for article in news_all])
+  save_to_file(content=news_all_text_version, filepath=user_files_folder_path(f"databases/{file_name}.md"), prepend=True)
+  """for article in news_all:
+    json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=article, add_createdat=False)"""
 
 
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testingConvertTxtToDb_2()
+  testingConvertTxtToDb_news()
   
