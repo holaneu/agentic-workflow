@@ -144,19 +144,6 @@ def workflow_take_quick_note(input, model=None):
 
 
 @workflow()
-def workflow_write_story(input, model=None):
-    """Generates short feel-good stories."""
-    if input is None:
-        return None 
-    story = assistant_writer(input=input, model=model)
-    if story:
-        story = story["message"]["content"].strip()
-        save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
-        json_db_add_entry(db_filepath=user_files_folder_path("databases/stories.json"), collection="entries", entry={"input": input.strip(), "content": story}, add_createdat=True)
-    return story
-
-
-@workflow()
 def workflow_download_ai_news():
     """Downloads and saves recent AI-related news articles."""
     news = download_news_newsapi(query="openai OR mistral OR claude", lastDays=5, domains="techcrunch.com,thenextweb.com")
@@ -270,6 +257,19 @@ def workflow_exctract_theses(input, model=None):
 
 
 @workflow()
+def workflow_write_story(input, model=None):
+    """Generates short feel-good stories."""
+    if input is None:
+        return None 
+    story = assistant_writer(input=input, model=model)
+    if story:
+        story = story["message"]["content"].strip()
+        save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_files_folder_path("databases/stories.json"), collection="entries", entry={"input": input.strip(), "content": story}, add_createdat=True)
+    return story
+
+
+@workflow()
 def workflow_write_story_reviewed(input, model=None):
     """Generates short feel-good stories reviewed by ai-editor."""
     if input is None:
@@ -277,7 +277,6 @@ def workflow_write_story_reviewed(input, model=None):
     story = assistant_writer(input=input, model=model).get("message", {}).get("content", "").strip()
     if not story:
         return "no story generated"
-    save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
     instructions_editor = f"""Jseš profesionální editor povídek, který posuzuje povídky a poskytuje zpětnou vazbu k jejich úpravě a zlepšení. Analyzuj vstupní text povídky a její slabé stránky a napiš jasné a stručné doporučení jak text upravit tak aby se odstranily tyto slabé stránky. Doporučení piš formou odrážek v neformátovaném plain text formátu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
 
     Vstupní text:
@@ -286,7 +285,6 @@ def workflow_write_story_reviewed(input, model=None):
     editor_feedback = assistant_universal_no_instructions(input=instructions_editor, model="gpt-4o").get("message", {}).get("content")
     if not editor_feedback:
         return "no editor's review generated"
-    save_to_file(user_files_folder_path("stories_reviewed.md"), story + "\n\n---\nFeedback:\n\n" + editor_feedback + "\n\n-----\n", prepend=True)
     instructions_edit_story = f"""
     Jseš spisovatel povídek. Tvým úkolem je upravit původní text povídky přesně podle všech instrukcí k úpravě textu a vytvořit tak novou verzi povídky, ve které budou odstraněny slabé stránky a byla zlepšena kvalita textu. Nepřidávej žádné komentáře ani fráze, ani na začátek, ani na konec tvé odpovědi.
 
@@ -297,7 +295,14 @@ def workflow_write_story_reviewed(input, model=None):
     {editor_feedback}
     """
     writer_edited_story = assistant_universal_no_instructions(input=instructions_edit_story, model="gpt-4o").get("message", {}).get("content")
-    save_to_file(user_files_folder_path("stories.md"), story + "\n\n-----\n", prepend=True)
+    db_entry = {
+        "input": input.strip(),
+        "content_for_editor": story.strip(),
+        "editor_feedback": editor_feedback.strip(),
+        "content": writer_edited_story.strip()        
+    }
+    save_to_file(user_files_folder_path("stories.md"), writer_edited_story + "\n\n-----\n", prepend=True)
+    json_db_add_entry(db_filepath=user_files_folder_path("databases/stories.json"), collection="entries", entry=db_entry, add_createdat=True)
     return writer_edited_story
 
 
