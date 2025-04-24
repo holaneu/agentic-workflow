@@ -52,7 +52,7 @@ def testing20250317():
   for url in specific_urls[5:10]:
     parsed_content = download_web_readable_content(url, "body main h1, body main p, body main bloquete")
     url_edited = url.replace(base_url, "").replace("/", "")
-    save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
+    save_to_file(content=parsed_content, filepath=user_files_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt \n")
   print(" *** DONE *** \n\n")
 
@@ -75,7 +75,7 @@ def testing20250319():
   for url in urls[20:]:
     parsed_content = download_web_readable_content(url, "body main h1, body main p, body main bloquete")
     url_edited = url.replace(base_url, "").replace("/", "")
-    save_to_file(content=parsed_content, filepath=output_folder_path("downloaded_articles/" + url_edited + ".txt"))
+    save_to_file(content=parsed_content, filepath=user_files_folder_path("downloaded_articles/" + url_edited + ".txt"))
     print(f" *** saved: {url_edited}.txt")
 
 
@@ -148,15 +148,208 @@ def testing20250408():
   print(decide_tool_for_task(task4))
 
 
-def testing20250408_2():
+def testing20250409():
+  # step 1: search for restaurants in the area
   query = "obedove menu v blizkem okoli dluhonska 43 v prerove"
   search_results = brave_search(query=query, count=5)
-  print(json.dumps(search_results, indent=2))
-  #for result in search_results:
+  print(json.dumps(search_results, indent=2), end="\n\n")
+  instructions = f"""Your task is to choose the most suitable search result for the origin query: {query}.
+    Use json format for output and include the following fields: title, url.
+    Search results: 
+    {search_results}    
+    """
+  # step 2: choose the most suitable search result
+  selected_search_result = fetch_ai(model="gemini-2.0-flash", input=instructions, structured_output=True)
+  print(json.dumps(selected_search_result, indent=2), end="\n\n")
+  if not selected_search_result['success']:
+    return "somthing went wrong"  
+  try:
+    # step 3: parse the selected search result
+    parsed_result = json.loads(selected_search_result.get('message', {}).get('content', ''))
+    print(f"Parsed result: {parsed_result}", end="\n\n")
+    if parsed_result and len(parsed_result) > 0:
+      url = parsed_result[0].get('url', '')
+      print(f"Selected URL: {url}", end="\n\n")
+      if url:
+        # step 4: download the content of the selected search result
+        source = download_web_readable_content(url, "#menicka .content .text")
+        print(source, end="\n\n")
+    else:
+      print("No valid URL found in search results")
+  except json.JSONDecodeError as e:
+    print(f"Error parsing JSON: {e}")
+  # step 5: extract foods and their origin restaurants from the text
+  source_shorten = source[:len(source) // 4]
+  source_shorten = source_shorten[100:]
+  instructions2 = f"""Your task is to extract foods and its origin restaurants from a text.
+    Use json format for output and include the following fields: food, restaurant.
+    Text: {source_shorten}
+    """
+  extracted_foods = fetch_ai(model="gemini-2.0-flash", input=instructions2, structured_output=True)
+  print(f"extracted foods: {json.dumps(extracted_foods.get('message', {}).get('content', ''), indent=2)}", end="\n\n")
+  # step 6: clean the extracted foods data and print results
+  try:
+    import re
+    cleaned_text = re.sub(r'[\x00-\x1F\x7F-\x9F]', '', extracted_foods.get('message', {}).get('content', ''))
+    json_data = json.loads(cleaned_text)    
+    print("extracted foods result:")
+    print(json.dumps(json_data, indent=2, ensure_ascii=False), end="\n\n")
+  except json.JSONDecodeError as e:
+      print(f"Error parsing JSON: {e}")
+      # Optional: Print the problematic part of the string
+      error_position = e.pos
+      context = cleaned_text[max(0, error_position-50):min(len(cleaned_text), error_position+50)]
+      print(f"\nContext around error (pos {error_position}):")
+      print(context)
+
+
+def testing20250416():
+  """Testing new model gpt-4.1. for deciding which tool to use for a specific task."""
+  tools_without_functions = {
+    name: {k: v for k, v in tool.items() if k != 'function'}
+    for name, tool in TOOLS_REGISTRY.items()
+  }
+  def decide_tool_for_task(task):
+    instructions = f"""You are manager deciding which tools to use for a specific task.
+    Available tools are: 
+    {tools_without_functions}
+    Your task is to choose the most suitable tool for the task: {task}.
+    Use json format for output and include the following fields: tool, reason.
+    """
+    ai_response = fetch_ai(model="gpt-4.1", input=instructions, structured_output=True)
+    return ai_response
+  
+  task1 = "Extract the event information from the text. Use json format for output and include the following fields: event, date, time, location."
+  task2 = "Translate the text from Czech to English."
+  task3 = "Generate a summary of the text."
+  task4 = "Generate id."  
+  print('gpt-4.1 test', 'task3', decide_tool_for_task(task3), sep="\n", end="\n\n")
+  print('gpt-4.1 test', 'task4', decide_tool_for_task(task4), sep="\n", end="\n\n")
+
+
+def testing20250416_2():
+  db_path=user_files_folder_path("databases/test1.json")
+  # create new db without schema
+  new_db = json_db_create_db_without_schema(db_filepath=db_path)
+  print(f"db: {new_db}", end="\n\n")
+  # add new entry to the db
+  entry_content = {
+    "content": f"test test {current_datetime_iso()}"
+  }
+  db_entry = json_db_add_entry(db_filepath=db_path, collection="entries", entry=entry_content)
+  print(f"db_entry: {db_entry}", end="\n\n")
+  # receive entry_id of the newly added entry
+  if db_entry.get('success', False):
+    db_entry_id = db_entry["data"]["entry_id"]
+    print(f"db_entry_id: {db_entry_id}", end="\n\n")
+  # load the whole db
+  db = json_db_load(db_filepath=db_path)
+  print(f"db: {db}", end="\n\n")  
+  # get first collection
+  db_collection_key = next(iter(db.get('collections', {}).keys()), None)
+  print(f"db_collection_name: {db_collection_key}", end="\n\n")
+  #db_collection = next(iter(db.get('collections', {}).values()), {})
+  db_collection_value = db.get('collections', {}).get(db_collection_key, [])
+  print(f"db_collection: {db_collection_value}", end="\n\n")
+  # delete the last entry from the db
+  last_entry_id = db_collection_value[-1].get('id', None)
+  print(f"last_entry_id: {last_entry_id}", end="\n\n")
+  removed_entry = json_db_delete_entry(db_filepath=db_path, collection=db_collection_key, entry_id=last_entry_id)
+  print(f"removed_entry: {removed_entry}", end="\n\n")
+  # update the first entry
+  first_entry_id = db_collection_value[0].get('id', None)
+  first_entry_content = db_collection_value[0].get('content', None)
+  updated_entry_content = first_entry_content + " UPDATED"
+  print(f"first_entry_id: {first_entry_id}", f"first_entry_content: {first_entry_content}", sep="\n", end="\n\n")
+  updated_entry = json_db_update_entry(db_filepath=db_path, collection=db_collection_key, entry_id=first_entry_id, updates={"content": updated_entry_content})
+  print(f"updated_entry: {updated_entry}", end="\n\n")
+  # get collection by collection key
+  collection = json_db_get_collection(db_filepath=db_path, collection=db_collection_key).get('data', []).get('entries', [])
+  print(f"collection: {collection}", end="\n\n")
+  
+
+def testingCreateNewDbs():
+  # create new dbs
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/vocabulary.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/logbook.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/questions.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/lexicon.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/news.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/stories.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/situations.json"), initial_collections=["entries"])
+  json_db_create_db_without_schema(db_filepath=user_files_folder_path("databases/blog_posts.json"), initial_collections=["entries"])
+
+
+def testingConvertTxtToDb_logbook():
+  #json_db_delete_entry(db_filepath=user_files_folder_path("databases/logbook.json"), collection="entries", entry_id="JDmKAZcnry")
+  data_file = open_file(filepath=user_files_folder_path("logbook.md"))
+  data_parsed = [json.loads(d.strip()) for d in data_file.split("-----") if d.strip()]
+  print(f"data: {json.dumps(data_parsed, indent=2, ensure_ascii=False)}", end="\n\n")
+  for item in reversed(data_parsed):
+    json_db_add_entry(db_filepath=user_files_folder_path("databases/logbook.json"), collection="entries", entry=item, add_createdat=True)
+
+
+def testingConvertTxtToDb_vocabulary():
+  file_name = "vocabulary"
+  data_file = open_file(filepath=user_files_folder_path(f"{file_name}.md"))
+  data_parsed = [json.loads(d.strip()) for d in data_file.split("-----") if d.strip()]
+  start_index = 0
+  end_index = len(data_parsed)
+  data_fragment = data_parsed[start_index:end_index]
+  print(f"data: {json.dumps(data_fragment, indent=2, ensure_ascii=False)}", end="\n\n")
+  for item in reversed(data_fragment):
+    json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=item, add_createdat=True)
+
+
+def testingConvertTxtToDb_stories():
+  file_name = "stories"
+  data_item_format = "text"
+  data_file = open_file(filepath=user_files_folder_path(f"{file_name}.md"))
+  data_parsed = [d.strip() for d in data_file.split("-----") if d.strip()]
+  start_index = 0
+  end_index = len(data_parsed)
+  data_fragment = data_parsed[start_index:end_index]
+  for item in reversed(data_fragment):
+    if data_item_format == "json":
+      item = json.loads(item.strip())
+    elif data_item_format == "text":
+      item = {
+        "content": item.strip()
+      }
+    print(f"{json.dumps(item, indent=2, ensure_ascii=False)}", end="\n\n")
+    json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=item, add_createdat=True)
+  
+
+def testingConvertTxtToDb_news():
+  file_name = "news"
+  data_item_format = "json"
+  data_file = open_file(filepath=user_files_folder_path(f"{file_name}.md"))
+  data_parsed = [d.strip() for d in data_file.split("-----") if d.strip()]
+  start_index = 0
+  end_index = len(data_parsed)
+  data_fragment = data_parsed[start_index:end_index]
+  news_all = []
+  for item in reversed(data_fragment):
+    if data_item_format == "json":
+      item = json.loads(item.strip())
+    elif data_item_format == "text":
+      item = {
+        "content": item.strip()
+      }
+    articles = item.get("articles", [])
+    news_all.extend(articles)
+    #print(f"{json.dumps(articles, indent=2, ensure_ascii=False)}", end="\n\n")
+    #json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=item, add_createdat=True)
+  #print(f"{json.dumps(news_all, indent=2, ensure_ascii=False)}", end="\n\n")
+  print(len(news_all))
+  news_all_text_version = "\n\n-----\n\n".join([json.dumps(article, indent=2, ensure_ascii=False) for article in news_all])
+  save_to_file(content=news_all_text_version, filepath=user_files_folder_path(f"databases/{file_name}.md"), prepend=True)
+  """for article in news_all:
+    json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=article, add_createdat=False)"""
 
 
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testing20250408_2()
+  testingConvertTxtToDb_news()
   
