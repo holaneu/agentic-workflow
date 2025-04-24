@@ -33,12 +33,13 @@ def workflow_translation_cs_en_json(input, model=None):
         return "no translation generated"
     translation_str = translation_str.get("message", {}).get("content", "").strip()
     try:
+        file_name = "vocabulary"
         translation_parsed = json.loads(translation_str)
         if not isinstance(translation_parsed, dict):
           return "invalid JSON structure"
         translation_str = json.dumps(translation_parsed, indent=2, ensure_ascii=False)
-        save_to_file(user_files_folder_path("vocabulary.txt"), translation_str + "\n\n-----\n", prepend=True)
-        json_db_add_entry(db_filepath=user_files_folder_path("databases/vocabulary.json"), collection="entries", entry=translation_parsed, add_createdat=True)
+        save_to_file(user_files_folder_path(f"{file_name}.md"), translation_str + "\n\n-----\n", prepend=True)
+        json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=translation_parsed, add_createdat=True)
         return translation_str
     except json.JSONDecodeError:
         return "failed to decode JSON"
