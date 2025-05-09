@@ -6,19 +6,8 @@ import datetime
 from pathlib import Path
 from typing import Dict, Any
 
+from utils import *
 from configs import *
-
-
-def tool(**kwargs):
-  """Decorator to define tool functions with metadata."""
-  def decorator(func):
-      func.id = func.__name__  # Automatically set id to the function name
-      func.name = kwargs.get('name', func.__name__.replace('', '').replace('_', ' '))  # Use function name as default name
-      func.description = kwargs.get('description', func.__doc__)  # Use function docstring if no description
-      func.category = kwargs.get('category', None)  # Assign None if category is not provided
-      func.is_tool = True
-      return func
-  return decorator
 
 
 @tool()
