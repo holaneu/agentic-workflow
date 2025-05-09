@@ -348,8 +348,18 @@ def testingConvertTxtToDb_news():
     json_db_add_entry(db_filepath=user_files_folder_path(f"databases/{file_name}.json"), collection="entries", entry=article, add_createdat=False)"""
 
 
+def testingExportToolsRegistry():
+  tools_without_functions = {
+    name: {k: v for k, v in tool.items() if k != 'function'}
+    for name, tool in TOOLS_REGISTRY.items()
+  }
+  tools_without_functions = json.dumps(tools_without_functions, indent=2, ensure_ascii=False)
+  save_to_file(content=tools_without_functions, filepath=user_files_folder_path(f"tools_registry.json"), prepend=True)
+
+
+
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testingConvertTxtToDb_news()
+  testingExportToolsRegistry()
   
