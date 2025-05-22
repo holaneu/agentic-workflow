@@ -361,5 +361,6 @@ def testingExportToolsRegistry():
 # ------- run tests -------
 
 if __name__ == "__main__": 
-  testingExportToolsRegistry()
+  #testingExportToolsRegistry()
+  testing_registries()
   
